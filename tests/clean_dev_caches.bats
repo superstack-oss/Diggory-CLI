@@ -777,7 +777,7 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"Docker unused data · review with docker system df"* ]] || return 1
     [[ "$output" != *"whitelisted"* ]] || return 1
-    [[ "$output" != *"mo clean --whitelist"* ]] || return 1
+    [[ "$output" != *"digg clean --whitelist"* ]] || return 1
     [[ "$output" != *"docker called"* ]]
 }
 

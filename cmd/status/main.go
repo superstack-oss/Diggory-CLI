@@ -1,4 +1,4 @@
-// Package main provides the mo status command for real-time system monitoring.
+// Package main provides the digg status command for real-time system monitoring.
 package main
 
 import (

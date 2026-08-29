@@ -256,7 +256,7 @@ _update_acquire_lock() {
     fi
     # Same mutex choice as install.sh: prefer the kernel lock, fall back to an
     # atomic mkdir where /usr/bin/lockf was never shipped (#1348). Requiring it
-    # made `mo update` unusable on every macOS before it existed.
+    # made `digg update` unusable on every macOS before it existed.
     local mutex_dir=""
     if [[ ! -x /usr/bin/lockf ]]; then
         [[ -x /bin/mkdir ]] || return 1
@@ -462,7 +462,7 @@ _update_print_verified_success() {
 # the user's machine, which is exactly what a broken installed version cannot
 # fix by itself (#1297). Streaming install.sh from main straight into bash
 # skips all of it, so a server-side install.sh fix reaches every stuck install
-# on its next `mo update`. install.sh only dispatches on its final line, and
+# on its next `digg update`. install.sh only dispatches on its final line, and
 # pipefail surfaces a truncated download, so a partial script runs nothing.
 _update_self_heal_reinstall() {
     local assume_sudo="$1"
@@ -487,7 +487,7 @@ _update_self_heal_reinstall() {
         heal_output=$(
             set -o pipefail
             curl -fsSL --connect-timeout 10 --max-time 60 \
-                "https://raw.githubusercontent.com/tw93/diggory/main/install.sh" |
+                "https://raw.githubusercontent.com/superstack-oss/Diggory-CLI/main/install.sh" |
                 DIGGORY_ASSUME_SUDO_AUTH="$assume_sudo" DIGGORY_VERSION="$update_ref" \
                     DIGGORY_INSTALL_COMMIT="$install_commit" DIGGORY_INSTALL_RECEIPT="$install_receipt" \
                     bash -s -- --prefix "$install_dir" --config "$config_dir" 2>&1
@@ -499,7 +499,7 @@ _update_self_heal_reinstall() {
         heal_output=$(
             set -o pipefail
             wget --timeout=10 --tries=3 -qO- \
-                "https://raw.githubusercontent.com/tw93/diggory/main/install.sh" |
+                "https://raw.githubusercontent.com/superstack-oss/Diggory-CLI/main/install.sh" |
                 DIGGORY_ASSUME_SUDO_AUTH="$assume_sudo" DIGGORY_VERSION="$update_ref" \
                     DIGGORY_INSTALL_COMMIT="$install_commit" DIGGORY_INSTALL_RECEIPT="$install_receipt" \
                     bash -s -- --prefix "$install_dir" --config "$config_dir" 2>&1
@@ -525,7 +525,7 @@ _update_print_manual_reinstall() {
     printf -v quoted_ref '%q' "$update_ref"
     printf -v quoted_install_dir '%q' "$install_dir"
     printf -v quoted_config_dir '%q' "$config_dir"
-    printf '%s Reinstall manually: curl -fsSL https://raw.githubusercontent.com/tw93/diggory/main/install.sh | DIGGORY_VERSION=%s bash -s -- --prefix %s --config %s\n' \
+    printf '%s Reinstall manually: curl -fsSL https://raw.githubusercontent.com/superstack-oss/Diggory-CLI/main/install.sh | DIGGORY_VERSION=%s bash -s -- --prefix %s --config %s\n' \
         "${ICON_REVIEW}" "$quoted_ref" "$quoted_install_dir" "$quoted_config_dir"
 }
 
@@ -533,25 +533,25 @@ _update_print_manual_reinstall() {
 # These run inside `latest=$(...)` command substitutions in a shell with
 # `set -euo pipefail`, so a nonzero pipeline (curl refused by a flaky proxy, or
 # grep finding no match) would kill the whole command before the caller's own
-# fallback and error message could run. `mo update` exited 1 with no output at
+# fallback and error message could run. `digg update` exited 1 with no output at
 # all that way. The trailing `|| true` is what keeps the failure recoverable.
 get_latest_version() {
     curl -fsSL --connect-timeout 2 --max-time 3 -H "Cache-Control: no-cache" \
-        "https://raw.githubusercontent.com/tw93/diggory/main/diggory" 2> /dev/null |
+        "https://raw.githubusercontent.com/superstack-oss/Diggory-CLI/main/diggory" 2> /dev/null |
         grep '^VERSION=' | head -1 | sed 's/VERSION="\(.*\)"/\1/' || true
 }
 
 get_latest_version_from_github() {
     local version
     version=$(curl -fsSL --connect-timeout 2 --max-time 3 \
-        "https://api.github.com/repos/tw93/diggory/releases/latest" 2> /dev/null |
+        "https://api.github.com/repos/superstack-oss/Diggory-CLI/releases/latest" 2> /dev/null |
         grep '"tag_name"' | head -1 | sed -E 's/.*"([^"]+)".*/\1/' || true)
     version="${version#v}"
     version="${version#V}"
     echo "$version"
 }
 
-# Foreground `mo update` version discovery. The single-shot helpers above stay
+# Foreground `digg update` version discovery. The single-shot helpers above stay
 # fast because the update-available banner calls them on every command; an
 # explicit update is worth a bounded retry instead, since the same proxy reset
 # that breaks the installer download also breaks this request.
@@ -746,10 +746,10 @@ get_latest_commit_from_github() {
     local sha=""
     if command -v curl > /dev/null 2>&1; then
         response=$(curl -fsSL --connect-timeout 2 --max-time 3 \
-            "https://api.github.com/repos/tw93/diggory/commits/main" 2> /dev/null || true)
+            "https://api.github.com/repos/superstack-oss/Diggory-CLI/commits/main" 2> /dev/null || true)
     elif command -v wget > /dev/null 2>&1; then
         response=$(wget --timeout=3 --tries=1 -qO- \
-            "https://api.github.com/repos/tw93/diggory/commits/main" 2> /dev/null || true)
+            "https://api.github.com/repos/superstack-oss/Diggory-CLI/commits/main" 2> /dev/null || true)
     fi
     sha=$(printf '%s\n' "$response" |
         grep '"sha"[[:space:]]*:[[:space:]]*"[0-9a-f]\{40\}"' | head -1 | sed -E 's/.*"sha"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/') || sha=""
@@ -792,7 +792,7 @@ get_latest_commit_from_github() {
             git -c credential.helper= -c core.askPass=/usr/bin/false \
             -c protocol.allow=never -c protocol.https.allow=always \
             -c http.sslVerify=true -C / \
-            ls-remote https://github.com/tw93/diggory.git refs/heads/main \
+            ls-remote https://github.com/superstack-oss/Diggory-CLI.git refs/heads/main \
             2> /dev/null); then
             sha=$(printf '%s\n' "$response" |
                 awk '$2 == "refs/heads/main" { print $1; exit }')
@@ -931,7 +931,7 @@ show_version() {
     local channel
     channel=$(get_install_channel)
 
-    # A reader like `mo --version | head -1` closes the pipe after the first
+    # A reader like `digg --version | head -1` closes the pipe after the first
     # line; the remaining writes then fail with SIGPIPE and bash prints a
     # "write error: Broken pipe" the user never asked for. A closed reader
     # means "stop", so stop quietly.
@@ -958,32 +958,32 @@ show_help() {
     show_brand_banner
     echo
     printf "%s%s%s\n" "$BLUE" "COMMANDS" "$NC"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo" "$NC" "Main menu"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg" "$NC" "Main menu"
     for entry in "${DIGGORY_COMMANDS[@]}"; do
         local name="${entry%%:*}"
         local desc="${entry#*:}"
-        local display="mo $name"
-        [[ "$name" == "help" ]] && display="mo --help"
-        [[ "$name" == "version" ]] && display="mo --version"
+        local display="digg $name"
+        [[ "$name" == "help" ]] && display="digg --help"
+        [[ "$name" == "version" ]] && display="digg --version"
         printf "  %s%-28s%s %s\n" "$GREEN" "$display" "$NC" "$desc"
     done
     echo
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo clean --dry-run" "$NC" "Preview cleanup"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo clean --whitelist" "$NC" "Manage protected caches"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg clean --dry-run" "$NC" "Preview cleanup"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg clean --whitelist" "$NC" "Manage protected caches"
 
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo optimize --dry-run" "$NC" "Preview optimization"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo optimize --whitelist" "$NC" "Manage protected items"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo uninstall --dry-run" "$NC" "Preview app uninstall"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo history --json" "$NC" "Export cleanup history"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo purge --dry-run" "$NC" "Preview project purge"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo installer --dry-run" "$NC" "Preview installer cleanup"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo touchid enable --dry-run" "$NC" "Preview Touch ID setup"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo completion --dry-run" "$NC" "Preview shell completion edits"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo purge --paths" "$NC" "Configure scan directories"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo analyze /Volumes" "$NC" "Analyze external drives only"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo update --force" "$NC" "Force reinstall latest stable version"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo update --nightly" "$NC" "Install latest unreleased main branch build"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo remove --dry-run" "$NC" "Preview Diggory removal"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg optimize --dry-run" "$NC" "Preview optimization"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg optimize --whitelist" "$NC" "Manage protected items"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg uninstall --dry-run" "$NC" "Preview app uninstall"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg history --json" "$NC" "Export cleanup history"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg purge --dry-run" "$NC" "Preview project purge"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg installer --dry-run" "$NC" "Preview installer cleanup"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg touchid enable --dry-run" "$NC" "Preview Touch ID setup"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg completion --dry-run" "$NC" "Preview shell completion edits"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg purge --paths" "$NC" "Configure scan directories"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg analyze /Volumes" "$NC" "Analyze external drives only"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg update --force" "$NC" "Force reinstall latest stable version"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg update --nightly" "$NC" "Install latest unreleased main branch build"
+    printf "  %s%-28s%s %s\n" "$GREEN" "digg remove --dry-run" "$NC" "Preview Diggory removal"
     echo
     printf "%s%s%s\n" "$BLUE" "OPTIONS" "$NC"
     printf "  %s%-28s%s %s\n" "$GREEN" "--debug" "$NC" "Show detailed operation logs"
@@ -1015,7 +1015,7 @@ update_diggory() (
         if [[ "$nightly_update" == "true" ]]; then
             local review_icon="${ICON_REVIEW:-⊙}"
             log_error "Nightly update is only available for script installations. Homebrew installs follow stable releases."
-            printf '%s Reinstall via script to use: mo update --nightly\n' "$review_icon"
+            printf '%s Reinstall via script to use: digg update --nightly\n' "$review_icon"
             exit 1
         fi
         update_via_homebrew "$VERSION"
@@ -1054,7 +1054,7 @@ update_diggory() (
             if [[ ! "$latest_commit" =~ ^[0-9a-f]{40}$ ]]; then
                 log_error "Unable to resolve latest nightly commit. No update was installed."
                 echo -e "${ICON_REVIEW} Check GitHub access and try again."
-                echo -e "${ICON_REVIEW} To explicitly reinstall anyway: ${GRAY}mo update --nightly --force${NC}"
+                echo -e "${ICON_REVIEW} To explicitly reinstall anyway: ${GRAY}digg update --nightly --force${NC}"
                 exit 1
             fi
 
@@ -1090,12 +1090,12 @@ update_diggory() (
         if [[ -z "$latest" ]]; then
             log_error "Unable to check for updates. Check network connection."
             echo -e "${ICON_REVIEW} Check if you can access GitHub, https://github.com"
-            echo -e "${ICON_REVIEW} Try again with: ${GRAY}mo update${NC}"
+            echo -e "${ICON_REVIEW} Try again with: ${GRAY}digg update${NC}"
             exit 1
         fi
         if [[ ! "$latest" =~ ^[Vv]?[0-9]+(\.[0-9]+)*$ ]]; then
             log_error "Invalid version response: $latest"
-            echo -e "${ICON_REVIEW} Try again later or use: ${GRAY}mo update --nightly${NC}"
+            echo -e "${ICON_REVIEW} Try again later or use: ${GRAY}digg update --nightly${NC}"
             exit 1
         fi
 
@@ -1136,7 +1136,7 @@ update_diggory() (
     if [[ "$nightly_update" != "true" ]]; then
         installer_ref="V${latest#V}"
     fi
-    local installer_url="https://raw.githubusercontent.com/tw93/diggory/${installer_ref}/install.sh"
+    local installer_url="https://raw.githubusercontent.com/superstack-oss/Diggory-CLI/${installer_ref}/install.sh"
     local tmp_installer
     tmp_installer="$(mktemp_file)" || {
         log_error "Update failed"
@@ -1207,7 +1207,7 @@ update_diggory() (
             _update_cleanup
             rm -f "$tmp_installer"
             log_error "Admin access cannot be handed to the installer in this environment"
-            echo -e "${ICON_REVIEW} Run ${GRAY}mo update${NC} from a terminal, or cache credentials first: ${GRAY}sudo -v && mo update${NC}"
+            echo -e "${ICON_REVIEW} Run ${GRAY}digg update${NC} from a terminal, or cache credentials first: ${GRAY}sudo -v && digg update${NC}"
             exit 1
         fi
     fi

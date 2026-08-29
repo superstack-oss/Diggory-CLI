@@ -517,7 +517,7 @@ EOF
 
 	[ "$status" -eq 0 ] || return 1
 	[[ "$output" == *"Cloud-synced artifacts may also be removed from other devices."* ]] || return 1
-	[[ "$output" == *"mo purge --paths"* ]] || return 1
+	[[ "$output" == *"digg purge --paths"* ]] || return 1
 	local warning_count
 	warning_count=$(printf '%s\n' "$output" | grep -cF "Cloud-synced artifacts may also be removed from other devices.")
 	[ "$warning_count" -eq 1 ] || return 1
@@ -1324,25 +1324,25 @@ EOF
 		[[ "$output" =~ "Great" ]]
 }
 
-@test "mo purge: command exists and is executable" {
+@test "digg purge: command exists and is executable" {
 	[ -x "$PROJECT_ROOT/diggory" ]
 	[ -f "$PROJECT_ROOT/bin/purge.sh" ]
 }
 
-@test "mo purge: shows in help text" {
+@test "digg purge: shows in help text" {
 	run env HOME="$HOME" "$PROJECT_ROOT/diggory" --help
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"mo purge"* ]]
+	[[ "$output" == *"digg purge"* ]]
 }
 
-@test "mo purge --help includes include-empty option" {
+@test "digg purge --help includes include-empty option" {
 	run env HOME="$HOME" "$PROJECT_ROOT/diggory" purge --help
 	[ "$status" -eq 0 ]
 	[[ "$output" == *"--include-empty"* ]] || return 1
 	[[ "$output" == *"Show zero-size project artifact directories"* ]]
 }
 
-@test "mo purge: accepts --debug flag" {
+@test "digg purge: accepts --debug flag" {
 	if ! command -v gtimeout >/dev/null 2>&1 && ! command -v timeout >/dev/null 2>&1; then
 		skip "gtimeout/timeout not available"
 	fi
@@ -1357,7 +1357,7 @@ EOF
 	true
 }
 
-@test "mo purge: accepts --dry-run flag" {
+@test "digg purge: accepts --dry-run flag" {
 	if ! command -v gtimeout >/dev/null 2>&1 && ! command -v timeout >/dev/null 2>&1; then
 		skip "gtimeout/timeout not available"
 	fi
@@ -1373,7 +1373,7 @@ EOF
 	[[ "$output" == *"DRY RUN MODE"* ]] || [[ "$output" == *"Dry run complete"* ]]
 }
 
-@test "mo purge: accepts --include-empty flag" {
+@test "digg purge: accepts --include-empty flag" {
 	if ! command -v gtimeout >/dev/null 2>&1 && ! command -v timeout >/dev/null 2>&1; then
 		skip "gtimeout/timeout not available"
 	fi
@@ -1390,7 +1390,7 @@ EOF
 	[[ "$output" != *"Unknown option"* ]]
 }
 
-@test "mo purge: creates cache directory for stats" {
+@test "digg purge: creates cache directory for stats" {
 	if ! command -v gtimeout >/dev/null 2>&1 && ! command -v timeout >/dev/null 2>&1; then
 		skip "gtimeout/timeout not available"
 	fi
@@ -1508,7 +1508,7 @@ EOF
 # array (menu_options, item_paths, item_sizes, …) was in size order.
 # Effect: the "Full path" footer showed the wrong project for the highlighted
 # item, and the confirmation dialog listed paths that did not match the
-# selection. See https://github.com/tw93/Diggory/issues/647
+# selection. See https://github.com/superstack-oss/Diggory-CLI/issues/647
 #
 # These tests run clean_project_artifacts under a pseudo-terminal (so the
 # interactive code path is taken and select_purge_categories is called).

@@ -12,7 +12,7 @@ HISTORY_JSON=false
 HISTORY_LIMIT="$DIGGORY_HISTORY_DEFAULT_LIMIT"
 
 show_history_help() {
-    echo "Usage: mo history [OPTIONS]"
+    echo "Usage: digg history [OPTIONS]"
     echo ""
     echo "Review recent Diggory operation and deletion activity."
     echo ""
@@ -44,13 +44,13 @@ main() {
                 exit 0
                 ;;
             -*)
-                echo "Unknown option for mo history: $1" >&2
-                echo "Run 'mo history --help' for usage." >&2
+                echo "Unknown option for digg history: $1" >&2
+                echo "Run 'digg history --help' for usage." >&2
                 exit 1
                 ;;
             *)
-                echo "Unexpected argument for mo history: $1" >&2
-                echo "Run 'mo history --help' for usage." >&2
+                echo "Unexpected argument for digg history: $1" >&2
+                echo "Run 'digg history --help' for usage." >&2
                 exit 1
                 ;;
         esac

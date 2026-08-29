@@ -287,7 +287,7 @@ perform_purge() {
 show_help() {
     echo -e "${PURPLE_BOLD}Diggory Purge${NC}, Clean old project build artifacts"
     echo ""
-    echo -e "${YELLOW}Usage:${NC} mo purge [options]"
+    echo -e "${YELLOW}Usage:${NC} digg purge [options]"
     echo ""
     echo -e "${YELLOW}Options:${NC}"
     echo "  --paths         Edit custom scan directories"
@@ -327,7 +327,7 @@ main() {
                 ;;
             *)
                 echo "Unknown option: $arg"
-                echo "Use 'mo purge --help' for usage information"
+                echo "Use 'digg purge --help' for usage information"
                 exit 1
                 ;;
         esac

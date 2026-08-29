@@ -57,7 +57,7 @@ remove_stale_completion_entries() {
     local config_file="$1"
     local success_message="$2"
 
-    if [[ ! -f "$config_file" ]] || ! grep -Eq "(^# Diggory shell completion$|(diggory|mo)[[:space:]]+completion)" "$config_file" 2> /dev/null; then
+    if [[ ! -f "$config_file" ]] || ! grep -Eq "(^# Diggory shell completion$|(diggory|digg)[[:space:]]+completion)" "$config_file" 2> /dev/null; then
         return 1
     fi
 
@@ -65,7 +65,7 @@ remove_stale_completion_entries() {
     local temp_file
     original_mode="$(stat -f '%Mp%Lp' "$config_file" 2> /dev/null || true)"
     temp_file="$(mktemp)"
-    grep -Ev "(^# Diggory shell completion$|(diggory|mo)[[:space:]]+completion)" "$config_file" > "$temp_file" || true
+    grep -Ev "(^# Diggory shell completion$|(diggory|digg)[[:space:]]+completion)" "$config_file" > "$temp_file" || true
     mv "$temp_file" "$config_file"
     [[ -n "$original_mode" ]] && chmod "$original_mode" "$config_file" 2> /dev/null || true
     [[ -n "$success_message" ]] && echo -e "${GREEN}${ICON_SUCCESS}${NC} $success_message"
@@ -107,16 +107,16 @@ if [[ $# -eq 0 ]]; then
     completion_name=""
     if command -v diggory > /dev/null 2>&1; then
         completion_name="diggory"
-    elif command -v mo > /dev/null 2>&1; then
-        completion_name="mo"
+    elif command -v digg > /dev/null 2>&1; then
+        completion_name="digg"
     fi
 
     # Fish uses a separate install path: write to ~/.config/fish/completions/ so
-    # both `diggory` and `mo` load completions independently on terminal startup.
+    # both `diggory` and `digg` load completions independently on terminal startup.
     if [[ "$current_shell" == "fish" ]]; then
         fish_dir="${HOME}/.config/fish/completions"
         diggory_file="${fish_dir}/diggory.fish"
-        mo_file="${fish_dir}/mo.fish"
+        mo_file="${fish_dir}/digg.fish"
         config_fish="${HOME}/.config/fish/config.fish"
 
         if [[ -z "$completion_name" ]]; then
@@ -169,8 +169,8 @@ if [[ $# -eq 0 ]]; then
 
         mkdir -p "$fish_dir"
         "$completion_name" completion fish > "$diggory_file"
-        # mo.fish sources diggory.fish so Fish loads mo completions on `mo<Tab>`
-        printf '# Diggory completions for mo (alias) -- auto-generated, do not edit\n' > "$mo_file"
+        # digg.fish sources diggory.fish so Fish loads digg completions on `digg<Tab>`
+        printf '# Diggory completions for digg (alias) -- auto-generated, do not edit\n' > "$mo_file"
         printf 'source %s\n' "$diggory_file" >> "$mo_file"
 
         if [[ -f "$diggory_file" ]]; then
@@ -200,7 +200,7 @@ if [[ $# -eq 0 ]]; then
     esac
 
     if [[ -z "$completion_name" ]]; then
-        if [[ -f "$config_file" ]] && grep -Eq "(^# Diggory shell completion$|(diggory|mo)[[:space:]]+completion)" "$config_file" 2> /dev/null; then
+        if [[ -f "$config_file" ]] && grep -Eq "(^# Diggory shell completion$|(diggory|digg)[[:space:]]+completion)" "$config_file" 2> /dev/null; then
             if [[ "${DIGGORY_DRY_RUN:-0}" == "1" ]]; then
                 echo -e "${GRAY}${ICON_REVIEW} [DRY RUN] Would remove stale completion entries from $config_file${NC}"
                 echo ""
@@ -208,7 +208,7 @@ if [[ $# -eq 0 ]]; then
                 original_mode=""
                 original_mode="$(stat -f '%Mp%Lp' "$config_file" 2> /dev/null || true)"
                 temp_file="$(mktemp)"
-                grep -Ev "(^# Diggory shell completion$|(diggory|mo)[[:space:]]+completion)" "$config_file" > "$temp_file" || true
+                grep -Ev "(^# Diggory shell completion$|(diggory|digg)[[:space:]]+completion)" "$config_file" > "$temp_file" || true
                 mv "$temp_file" "$config_file"
                 if [[ -n "$original_mode" ]]; then
                     chmod "$original_mode" "$config_file" 2> /dev/null || true
@@ -222,7 +222,7 @@ if [[ $# -eq 0 ]]; then
     fi
 
     # Check if already installed and normalize to latest line
-    if [[ -f "$config_file" ]] && grep -Eq "(diggory|mo)[[:space:]]+completion" "$config_file" 2> /dev/null; then
+    if [[ -f "$config_file" ]] && grep -Eq "(diggory|digg)[[:space:]]+completion" "$config_file" 2> /dev/null; then
         if [[ "${DIGGORY_DRY_RUN:-0}" == "1" ]]; then
             echo -e "${GRAY}${ICON_REVIEW} [DRY RUN] Would normalize completion entry in $config_file${NC}"
             echo ""
@@ -232,7 +232,7 @@ if [[ $# -eq 0 ]]; then
         original_mode=""
         original_mode="$(stat -f '%Mp%Lp' "$config_file" 2> /dev/null || true)"
         temp_file="$(mktemp)"
-        grep -Ev "(^# Diggory shell completion$|(diggory|mo)[[:space:]]+completion)" "$config_file" > "$temp_file" || true
+        grep -Ev "(^# Diggory shell completion$|(diggory|digg)[[:space:]]+completion)" "$config_file" > "$temp_file" || true
         mv "$temp_file" "$config_file"
         if [[ -n "$original_mode" ]]; then
             chmod "$original_mode" "$config_file" 2> /dev/null || true
@@ -286,7 +286,7 @@ if [[ $# -eq 0 ]]; then
         original_mode=""
         original_mode="$(stat -f '%Mp%Lp' "$config_file" 2> /dev/null || true)"
         temp_file="$(mktemp)"
-        grep -Ev "(^# Diggory shell completion$|(diggory|mo)[[:space:]]+completion)" "$config_file" > "$temp_file" || true
+        grep -Ev "(^# Diggory shell completion$|(diggory|digg)[[:space:]]+completion)" "$config_file" > "$temp_file" || true
         mv "$temp_file" "$config_file"
         if [[ -n "$original_mode" ]]; then
             chmod "$original_mode" "$config_file" 2> /dev/null || true
@@ -355,11 +355,11 @@ _diggory_completions()
     fi
 }
 
-complete -F _diggory_completions diggory mo
+complete -F _diggory_completions diggory digg
 EOF
         ;;
     zsh)
-        printf '#compdef diggory mo\n\n'
+        printf '#compdef diggory digg\n\n'
         printf '_diggory() {\n'
         printf '    local -a subcommands\n'
         printf '    subcommands=(\n'
@@ -408,13 +408,13 @@ EOF
         printf '            ;;\n'
         printf '    esac\n'
         printf '}\n\n'
-        printf 'compdef _diggory diggory mo\n'
+        printf 'compdef _diggory diggory digg\n'
         ;;
     fish)
         printf '# Completions for diggory\n'
         emit_fish_completions diggory
-        printf '\n# Completions for mo (alias)\n'
-        emit_fish_completions mo
+        printf '\n# Completions for digg (alias)\n'
+        emit_fish_completions digg
         printf '\nfunction __fish_diggory_no_subcommand\n'
         printf '    for i in (commandline -opc)\n'
         # shellcheck disable=SC2016
@@ -432,7 +432,7 @@ EOF
         cat << 'EOF'
 Usage: diggory completion [bash|zsh|fish]
 
-Setup shell tab completion for diggory and mo commands.
+Setup shell tab completion for diggory and digg commands.
 
 Auto-install:
   diggory completion              # Auto-detect shell and install

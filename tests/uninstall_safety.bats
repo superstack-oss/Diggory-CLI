@@ -616,7 +616,7 @@ EOF
 
 @test "a deliberate quit in the selector stays a quiet cancel, not an abort" {
 	# Pressing q is the documented way to leave the selector, matching
-	# diggory's other cancel flows (mo remove ESC exits 0 silently). Only a
+	# diggory's other cancel flows (digg remove ESC exits 0 silently). Only a
 	# selector that broke may print the abort and fail; the menu marks the
 	# difference through _DIGGORY_MENU_USER_QUIT.
 	run env HOME="$HOME" PROJECT_ROOT="$PROJECT_ROOT" /bin/bash --noprofile --norc << 'EOF'

@@ -134,7 +134,7 @@ update_via_homebrew() {
         installed_version=$(HOMEBREW_NO_ENV_HINTS=1 HOMEBREW_NO_AUTO_UPDATE=1 \
             run_with_timeout "$DIGGORY_TIMEOUT_PKG_LIST_SEC" brew list --versions diggory 2> /dev/null | awk '{print $2}')
         [[ -z "$installed_version" ]] && installed_version=$(run_with_timeout "$DIGGORY_TIMEOUT_QUICK_DETECT_SEC" \
-            mo --version 2> /dev/null | awk '/Diggory version/ {print $3; exit}' || true)
+            digg --version 2> /dev/null | awk '/Diggory version/ {print $3; exit}' || true)
         echo ""
         echo -e "${GREEN}${ICON_SUCCESS}${NC} Already on latest version, ${installed_version:-$current_version}"
         echo ""
@@ -144,7 +144,7 @@ update_via_homebrew() {
         new_version=$(HOMEBREW_NO_ENV_HINTS=1 HOMEBREW_NO_AUTO_UPDATE=1 \
             run_with_timeout "$DIGGORY_TIMEOUT_PKG_LIST_SEC" brew list --versions diggory 2> /dev/null | awk '{print $2}')
         [[ -z "$new_version" ]] && new_version=$(run_with_timeout "$DIGGORY_TIMEOUT_QUICK_DETECT_SEC" \
-            mo --version 2> /dev/null | awk '/Diggory version/ {print $3; exit}' || true)
+            digg --version 2> /dev/null | awk '/Diggory version/ {print $3; exit}' || true)
         echo ""
         echo -e "${GREEN}${ICON_SUCCESS}${NC} Updated to latest version, ${new_version:-$current_version}"
         echo ""

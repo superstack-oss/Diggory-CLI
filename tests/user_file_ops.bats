@@ -127,7 +127,7 @@ ensure_diggory_temp_root
 parent_file=$(mktemp_file "parent-installer")
 [[ -f "$parent_file" ]] || exit 1
 
-# install.sh runs the freshly installed `diggory --version` while `mo update`
+# install.sh runs the freshly installed `diggory --version` while `digg update`
 # still holds its downloaded installer. That child inherits the exported
 # registry path; adopting it would delete the parent's live temp files.
 /bin/bash --noprofile --norc -c '

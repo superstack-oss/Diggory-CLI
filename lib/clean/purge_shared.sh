@@ -101,7 +101,7 @@ readonly DIGGORY_PURGE_PROJECT_INDICATORS=(
 readonly DIGGORY_CACHEDIR_TAG_NAME="CACHEDIR.TAG"
 readonly DIGGORY_CACHEDIR_TAG_SIGNATURE="Signature: 8a477f597d28d172789f06886806bc55"
 
-# High-noise targets intentionally excluded from quick hint scans in mo clean.
+# High-noise targets intentionally excluded from quick hint scans in digg clean.
 readonly DIGGORY_PURGE_QUICK_HINT_EXCLUDED_TARGETS=(
     "bin"
     "vendor"

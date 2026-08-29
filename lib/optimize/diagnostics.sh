@@ -343,7 +343,7 @@ opt_diag_offer_detach_candidates() {
     echo -ne "  ${GRAY}${ICON_REVIEW}${NC} ${YELLOW}Detach now?${NC} ${GRAY}Enter confirm / Space cancel${NC}: "
     local key=""
     if ! key=$(read_key); then
-        echo -e "\n  ${GRAY}${ICON_WARNING}${NC} Kept mounted, whitelist via ${NC}mo optimize --whitelist${GRAY}${NC}"
+        echo -e "\n  ${GRAY}${ICON_WARNING}${NC} Kept mounted, whitelist via ${NC}digg optimize --whitelist${GRAY}${NC}"
         return 0
     fi
 
@@ -351,7 +351,7 @@ opt_diag_offer_detach_candidates() {
         echo ""
         opt_diag_detach_candidates "$candidates"
     else
-        echo -e "\n  ${GRAY}${ICON_WARNING}${NC} Kept mounted, whitelist via ${NC}mo optimize --whitelist${GRAY}${NC}"
+        echo -e "\n  ${GRAY}${ICON_WARNING}${NC} Kept mounted, whitelist via ${NC}digg optimize --whitelist${GRAY}${NC}"
     fi
 }
 

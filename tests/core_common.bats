@@ -562,7 +562,7 @@ EOF
     result=$(HOME="$HOME" /bin/bash --noprofile --norc -c "source '$PROJECT_ROOT/lib/core/common.sh'; should_protect_from_uninstall 'org.pqrs.Karabiner-Elements.Settings' && echo 'protected' || echo 'not-protected'")
     [ "$result" = "not-protected" ]
 
-    # The main app bundle id (the actual `mo uninstall --list` key) behaves the same:
+    # The main app bundle id (the actual `digg uninstall --list` key) behaves the same:
     # removable from uninstall, still data-protected during clean.
     result=$(HOME="$HOME" /bin/bash --noprofile --norc -c "source '$PROJECT_ROOT/lib/core/common.sh'; should_protect_from_uninstall 'org.pqrs.Karabiner-Elements' && echo 'protected' || echo 'not-protected'")
     [ "$result" = "not-protected" ]

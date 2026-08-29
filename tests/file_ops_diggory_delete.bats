@@ -691,7 +691,7 @@ EOF
     [[ "$output" == *"cannot safely use elevated deletion"* ]] || return 1
     [[ "$output" == *"Move the app to Trash in Finder"* ]] || return 1
     [[ "$output" == *"protected containers and app data untouched"* ]] || return 1
-    [[ "$output" != *"mo clean"* ]] || return 1
+    [[ "$output" != *"digg clean"* ]] || return 1
 }
 
 @test "unrelated removal diagnostics do not probe Touch ID" {

@@ -16,8 +16,8 @@ Before drafting, confirm:
 2. **CodeName + emoji**. Ask the user. The title format is `V<version> <CodeName> <emoji>`.
 3. **Release commit range**. `git log <previous-tag>..V<version> --oneline` gives the raw material.
 4. **User-visible behavior changes**. Scan the full commit message bodies (not just subjects) for narrowed detection, removed features, or controlled regressions. These belong in notes even when they are not bug-fix-shaped, because users will encounter the changed boundary in production.
-5. **Issue reporters and PR contributors in this cycle**. Use the merged PRs and fixed issues in the release range. Keep it short, for example `Issue reporters and PR contributors this cycle: @a · @b.` Exclude `tw93` and bots.
-6. **Verify release exists**. `gh release view V<version> --repo tw93/Diggory --json id,name` should return non-empty. If it doesn't, the workflow hasn't finished, wait, don't `gh release create`.
+5. **Issue reporters and PR contributors in this cycle**. Use the merged PRs and fixed issues in the release range. Keep it short, for example `Issue reporters and PR contributors this cycle: @a · @b.` Exclude bots.
+6. **Verify release exists**. `gh release view V<version> --repo superstack-oss/Diggory-CLI --json id,name` should return non-empty. If it doesn't, the workflow hasn't finished, wait, don't `gh release create`.
 
 ## Pre-flight (cross-check against AGENTS.md)
 
@@ -33,7 +33,7 @@ If any fail, stop. The notes can wait; a bad release tag cannot.
 
 ## Format
 
-Strictly follow the current compact release shape. Read the latest stable release as the live format reference before drafting: `gh release view --repo tw93/Diggory --json tagName,body`.
+Strictly follow the current compact release shape. Read the latest stable release as the live format reference before drafting: `gh release view --repo superstack-oss/Diggory-CLI --json tagName,body`.
 
 Structure:
 
@@ -75,7 +75,7 @@ No `---` separators between sections, and no trailing repository link; the publi
 - **English block first, 中文 block second**. Same numbered order in both blocks. Same number of items.
 - **Order items by user-perceived impact, not commit chronology**. Headline change first; internal safety hardening, performance, and bug fixes follow.
 - **Do not describe overview icons that no longer exist**. Analyze overview rows are text-only because emoji width and baselines vary across terminals. If icons return later, they must not imply that user data such as iOS Backups, Xcode Archives, or Old Downloads is safe to delete.
-- **Verify every command mentioned in the notes actually exists in HEAD**. The deleted `mo check` / `mo doctor` commands nearly shipped in notes as a "feature" after they were removed.
+- **Verify every command mentioned in the notes actually exists in HEAD**. The deleted `digg check` / `digg doctor` commands nearly shipped in notes as a "feature" after they were removed.
 - **An incident or troubleshooting note is one sentence of symptom plus one command**. No cause taxonomy, no command per branch; the user needs the one line that gets them unstuck. Match the previous release's language treatment for that note: if the last release carried it in one language, do not add a second.
 - **Keep the Diggory Mac App cross-link only if it matches the current release style**. Do not turn it into a sales block.
 
@@ -84,7 +84,7 @@ No `---` separators between sections, and no trailing repository link; the publi
 Once the user approves the draft:
 
 ```bash
-gh release edit V<version> --repo tw93/Diggory \
+gh release edit V<version> --repo superstack-oss/Diggory-CLI \
   --title "V<version> <CodeName> <emoji>" \
   --notes-file <path-to-draft>
 ```
@@ -95,8 +95,8 @@ Then add the six reactions with this skill's helper (path is relative to this SK
 
 ## After publish
 
-- `gh release view V<version> --repo tw93/Diggory --web` (open in browser) so the user can eyeball it.
-- Remind the user: the Homebrew Core PR is workflow-driven and should already be in flight; do not re-run it manually unless the workflow log shows a failure.
+- `gh release view V<version> --repo superstack-oss/Diggory-CLI --web` (open in browser) so the user can eyeball it.
+- Remind the user: Homebrew Core is not wired yet. Releases publish GitHub assets only until a tap or core formula is added.
 
 ## When NOT to act
 

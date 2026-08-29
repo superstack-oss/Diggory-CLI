@@ -7,7 +7,7 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/tw93/diggory/internal/units"
+	"github.com/superstack-oss/Diggory-CLI/internal/units"
 )
 
 var (

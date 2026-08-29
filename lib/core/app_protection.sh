@@ -520,7 +520,7 @@ should_protect_path() {
     esac
 
     # 6. Match full path against protected patterns
-    # This catches things like /Users/tw93/Library/Caches/Claude when pattern is *Claude*
+    # This catches things like /Users/example/Library/Caches/Claude when pattern is *Claude*
     # Skip for container cache/tmp paths: bundle ID was already checked in step 3,
     # and critical containers are caught by steps 1/4/5.
     if [[ "$_container_cache_path" != "true" && "$_known_rebuildable_cache_path" != "true" ]]; then

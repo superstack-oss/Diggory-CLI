@@ -1,6 +1,6 @@
 # Diggory Security Audit
 
-This document describes the security-relevant behavior of the current `main` branch, updated for V1.50.0 on 2026-08-08. It is intended as a public description of Diggory's safety boundaries, destructive-operation controls, release integrity signals, and known limitations.
+This document describes the security-relevant behavior of the current `main` branch, updated for V1.0.0 on 2026-08-29. It is intended as a public description of Diggory's safety boundaries, destructive-operation controls, release integrity signals, and known limitations.
 
 ## Executive Summary
 
@@ -33,7 +33,7 @@ The highest-risk areas in Diggory are:
 - elevated cleanup paths that require sudo
 - release, install, and update trust signals for distributed artifacts
 
-`mo analyze` is intentionally lower-risk than cleanup flows:
+`digg analyze` is intentionally lower-risk than cleanup flows:
 
 - it does not require sudo
 - it respects normal user permissions and SIP
@@ -55,9 +55,9 @@ Core controls include:
 - uninstall removal flows that move items to Trash use `diggory_delete`, which validates the path again and records the operation result. `diggory_delete` now also validates symlinks instead of skipping them, and normalizes the target by collapsing repeated slashes and stripping a trailing slash before the protected-path check, so equivalent path spellings cannot slip past protection.
 - incomplete download cleanup skips files currently open (lsof check) and uses quoted glob patterns to prevent word-splitting on filenames that contain spaces
 - live user-cache protection refuses any reverse-DNS directory under `~/Library/Caches` whose owner is still running. Deleting an open SQLite cache can send the owning helper into a loop writing to unlinked files until the volume fills, observed with Autodesk Fusion's background helpers (issue #1390). The probe is tri-state and denies on both "running" and "could not tell": an unreadable process table is never read as idle. A SQLite family member is additionally refused while a WAL `-shm` companion exists or `lsof` proves an open handle, and a missing `lsof` fails closed. The check runs inside `validate_path_for_deletion()` and again in `safe_remove()` after size probing, so a helper that launches mid-scan still blocks the delete. The same gate covers the generic `~/Library/Caches/*` sweep, not only the app-specific cleaners
-- `mo clean` does not touch the LaunchServices database. A per-record removal is not implementable: `lsregister -u` resolves the path before unregistering, so on macOS 15 and later it returns `-10814` for exactly the records whose app is already gone. The only supported repair is a domain rescan, which is an explicit user-triggered task in `mo optimize` (`opt_launch_services_rebuild`), never an automatic step inside cleanup
+- `digg clean` does not touch the LaunchServices database. A per-record removal is not implementable: `lsregister -u` resolves the path before unregistering, so on macOS 15 and later it returns `-10814` for exactly the records whose app is already gone. The only supported repair is a domain rescan, which is an explicit user-triggered task in `digg optimize` (`opt_launch_services_rebuild`), never an automatic step inside cleanup
 - uninstall leftover removal is gated by a shared-bundle-id sibling guard: when another install of the same bundle id is still present, shared leftovers are kept and only the selected bundle is removed. Absence of a sibling must be proven, not assumed, so the scan reports three states and only a complete "no other install" result unlocks full leftover removal; a timeout, an unreadable volume, or an unreadable bundle degrades to the narrowed plan. The package-receipt half of that evidence is cached on disk keyed by a checksum of the installed receipt list rather than by time alone, because a TTL cannot prove completeness and a package installed after the last write would otherwise stay invisible to the guard
-- orphaned system-service cleanup in `mo clean` (`lib/clean/apps.sh` `clean_orphaned_system_services`) runs only when sudo is already available, scans `/Library/{LaunchDaemons,LaunchAgents,PrivilegedHelperTools}` while skipping `com.apple.*`, and flags an entry only when its launchd `Program`/`ProgramArguments[0]` path is absolute and missing, or a `PrivilegedHelperTools` helper whose parent app is uninstalled (`bundle_has_installed_app`). Package-manager and system binary locations, a known-helper protect list, mdfind-resolved installed apps, the whitelist, and `should_protect_path` (with `SYSTEM_CRITICAL_BUNDLES` still enforced) all exclude entries before removal. Root-owned plists are read with non-interactive sudo and fail closed, so an unreadable plist is never misread as a missing binary; removal runs `launchctl unload` then the guarded `safe_sudo_remove`, and honors dry-run (issue #1082)
+- orphaned system-service cleanup in `digg clean` (`lib/clean/apps.sh` `clean_orphaned_system_services`) runs only when sudo is already available, scans `/Library/{LaunchDaemons,LaunchAgents,PrivilegedHelperTools}` while skipping `com.apple.*`, and flags an entry only when its launchd `Program`/`ProgramArguments[0]` path is absolute and missing, or a `PrivilegedHelperTools` helper whose parent app is uninstalled (`bundle_has_installed_app`). Package-manager and system binary locations, a known-helper protect list, mdfind-resolved installed apps, the whitelist, and `should_protect_path` (with `SYSTEM_CRITICAL_BUNDLES` still enforced) all exclude entries before removal. Root-owned plists are read with non-interactive sudo and fail closed, so an unreadable plist is never misread as a missing binary; removal runs `launchctl unload` then the guarded `safe_sudo_remove`, and honors dry-run (issue #1082)
 
 Blocked paths remain protected even with sudo. Examples include:
 
@@ -194,7 +194,7 @@ Path traversal handling is also explicit:
 - non-absolute paths are rejected for destructive helpers
 - `..` is rejected when it appears as a path component
 - legitimate names containing `..` inside a single path element remain allowed to avoid false positives for real application data
-- `mo analyze` delete validates the raw user-supplied path before `filepath.Abs` resolves it, then validates the resolved absolute path a second time, closing a window where traversal segments could survive `Abs` normalization
+- `digg analyze` delete validates the raw user-supplied path before `filepath.Abs` resolves it, then validates the resolved absolute path a second time, closing a window where traversal segments could survive `Abs` normalization
 
 ## Privilege Escalation and Sudo Boundaries
 
@@ -211,7 +211,7 @@ Key properties:
 - sudo Trash routing refuses unsafe Trash locations, including symlinked Trash directories
 - authentication, SIP/MDM, and read-only filesystem failures are classified separately in file-operation results
 - sudo credential prompting passes through the system's native PAM prompt rather than a hardcoded string, ensuring correct behavior across locales and PAM configurations
-- Touch ID PAM configuration (`mo touchid`) uses `sudo install -m 444 -o root -g wheel` for atomic file writes, preventing temporary permission windows where PAM files could be user-writable (fixed in V1.39.0; prior versions used `sudo mv` which preserved temp-file ownership)
+- Touch ID PAM configuration (`digg touchid`) uses `sudo install -m 444 -o root -g wheel` for atomic file writes, preventing temporary permission windows where PAM files could be user-writable (fixed in V1.39.0; prior versions used `sudo mv` which preserved temp-file ownership)
 - the perl-based command timeout fallback creates a new process group with `setpgid(0, 0)` rather than calling `setsid()`, so the timed child keeps the controlling terminal. This lets nested sudo inside a Homebrew cask uninstall script reuse the already-cached credential instead of failing on a detached tty, while the group-kill cleanup semantics (`kill TERM -pid`) are unchanged.
 
 When sudo is denied or unavailable, Diggory prefers skipping privileged cleanup to forcing execution through unsafe fallback behavior.
@@ -256,7 +256,7 @@ Diggory exposes multiple safety controls before and during destructive actions:
 - analyzer delete uses Finder Trash rather than direct permanent removal
 - operation logs are written to `~/Library/Logs/diggory/operations.log` unless disabled with `MO_NO_OPLOG=1`
 - `diggory_delete` Trash and permanent deletion attempts are also recorded by the file-operation layer with result status, target path, and error context where available
-- `mo history` (`lib/core/history.sh`) is read-only: it reads `operations.log` and `deletions.log` to surface recent cleanup activity and performs no deletion or out-of-bounds writes
+- `digg history` (`lib/core/history.sh`) is read-only: it reads `operations.log` and `deletions.log` to surface recent cleanup activity and performs no deletion or out-of-bounds writes
 - timeouts bound external commands so stalled discovery or uninstall operations do not silently hang the entire flow
 
 Relevant timeout behavior includes:
@@ -340,15 +340,15 @@ Key coverage areas include:
 ## Known Limitations and Future Work
 
 - Cleanup is destructive. Most cleanup flows do not provide undo.
-- `mo analyze` delete is safer because it uses Trash, but other cleanup flows are permanent once confirmed.
-- `mo uninstall` now routes more removals through Trash, but Trash availability, permissions, and volume behavior still depend on the local macOS environment.
+- `digg analyze` delete is safer because it uses Trash, but other cleanup flows are permanent once confirmed.
+- `digg uninstall` now routes more removals through Trash, but Trash availability, permissions, and volume behavior still depend on the local macOS environment.
 - Generic orphan data waits 30 days before cleanup; this is conservative but heuristic.
 - Claude VM orphan cleanup waits 7 days before cleanup; this is also heuristic.
 - Time Machine safety windows are hour-based and intentionally conservative.
 - Localized app names may still be missed in some heuristic paths, though bundle IDs are preferred where available.
 - Users who want immediate removal of app data should use explicit uninstall flows rather than waiting for orphan cleanup.
 - Release artifacts include checksums and attestations, but downstream package-manager trust also depends on external distribution infrastructure.
-- `mo history --json` escapes strings byte by byte under `LC_ALL=C` (`history_json_escape`) for portable behavior on bash 3.2. Printable multibyte bytes are emitted verbatim, so the emitted JSON stays valid UTF-8, but the escaper does not perform Unicode-aware codepoint iteration. This is a known display-layer detail, not a correctness issue.
+- `digg history --json` escapes strings byte by byte under `LC_ALL=C` (`history_json_escape`) for portable behavior on bash 3.2. Printable multibyte bytes are emitted verbatim, so the emitted JSON stays valid UTF-8, but the escaper does not perform Unicode-aware codepoint iteration. This is a known display-layer detail, not a correctness issue.
 - Planned follow-up work includes stronger destructive-command threat modeling, more regression coverage for high-risk paths, and continued hardening of release integrity and disclosure workflow.
 
 For reporting procedures and supported versions, see [SECURITY.md](SECURITY.md).

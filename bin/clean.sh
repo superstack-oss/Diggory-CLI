@@ -419,7 +419,7 @@ write_clean_preview_header() {
 #
 # How to protect files:
 # 1. Copy any path below to ~/.config/diggory/whitelist
-# 2. Run: mo clean --whitelist
+# 2. Run: digg clean --whitelist
 #
 # Example:
 #   /Users/*/Library/Caches/com.example.app
@@ -1550,7 +1550,7 @@ start_cleanup() {
             echo ""
         else
             SYSTEM_CLEAN=false
-            echo -e "${GRAY}${ICON_WARNING} System caches need sudo, run ${NC}sudo -v && mo clean --dry-run${GRAY} for full preview${NC}"
+            echo -e "${GRAY}${ICON_WARNING} System caches need sudo, run ${NC}sudo -v && digg clean --dry-run${GRAY} for full preview${NC}"
             echo ""
         fi
         return
@@ -1817,7 +1817,7 @@ perform_cleanup() {
             # cannot remove a record whose app is already gone: on macOS 15 and
             # later it fails with -10814 for every such path, which is exactly
             # the set this would have targeted, so the step could only ever
-            # report failures. `mo optimize` already offers the supported
+            # report failures. `digg optimize` already offers the supported
             # repair (`lsregister -gc` plus a domain rescan) as an explicit,
             # user-triggered task.
             _run_cleanup_step clean_orphaned_container_stubs || return $?
@@ -2004,7 +2004,7 @@ perform_cleanup() {
         ($total_size_cleaned -gt 0 || "$DRY_RUN_TOTAL_PARTIAL" == "true" || $files_cleaned -gt 0) ]]; then
         if publish_clean_preview_file; then
             summary_details+=("Detailed file list: ${GRAY}$CLEAN_PREVIEW_FINAL_FILE${NC}")
-            summary_details+=("Use ${GRAY}mo clean --whitelist${NC} to add protection rules")
+            summary_details+=("Use ${GRAY}digg clean --whitelist${NC} to add protection rules")
         else
             summary_details+=("Cleanup preview file could not be written safely")
         fi
@@ -2075,18 +2075,18 @@ main() {
                 exit 0
                 ;;
             "--select" | "--categories" | "--exclude")
-                echo "mo clean $1 was removed in this release." >&2
-                echo "Use 'mo clean --dry-run' to preview cleanup and 'mo clean --whitelist' to protect paths." >&2
+                echo "digg clean $1 was removed in this release." >&2
+                echo "Use 'digg clean --dry-run' to preview cleanup and 'digg clean --whitelist' to protect paths." >&2
                 exit 1
                 ;;
             -*)
-                echo "Unknown option for mo clean: $1" >&2
-                echo "Run 'mo clean --help' for usage." >&2
+                echo "Unknown option for digg clean: $1" >&2
+                echo "Run 'digg clean --help' for usage." >&2
                 exit 1
                 ;;
             *)
-                echo "Unexpected argument for mo clean: $1" >&2
-                echo "Run 'mo clean --help' for usage." >&2
+                echo "Unexpected argument for digg clean: $1" >&2
+                echo "Run 'digg clean --help' for usage." >&2
                 exit 1
                 ;;
         esac

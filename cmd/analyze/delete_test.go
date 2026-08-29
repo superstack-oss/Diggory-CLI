@@ -394,7 +394,7 @@ func TestValidateTrashTargetAllowsNonEDRDarwinCache(t *testing.T) {
 }
 
 func TestValidateTrashTargetRejectsEndpointSecurityCachesWithoutHOME(t *testing.T) {
-	// The EDR check must not depend on HOME (e.g. `env -u HOME mo analyze`).
+	// The EDR check must not depend on HOME (e.g. `env -u HOME digg analyze`).
 	t.Setenv("HOME", "")
 	path := "/private/var/folders/zz/aa/C/com.crowdstrike.falcon.App/com.apple.metalfe"
 	if err := validateTrashTarget(path); err == nil || !strings.Contains(err.Error(), "protected path") {

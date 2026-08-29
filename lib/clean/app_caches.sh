@@ -649,7 +649,7 @@ clean_jianying_pro_generated_caches() {
     #
     # image/ and importcache3/ are deliberately excluded: both hold copies of
     # material the user imported, draft_info.json is encrypted so no plaintext
-    # reference check can prove they are unreferenced, and mo clean deletes
+    # reference check can prove they are unreferenced, and digg clean deletes
     # permanently. If the user has since moved or deleted the source file, the
     # cached copy is the only remaining one. Revisit only with evidence that
     # the editor re-imports from the original on demand.

@@ -260,7 +260,7 @@ _diggory_process_table() {
 
     # Diggory must not vote on itself. `pgrep -f` skipped the caller for free;
     # a raw table does not, and every candidate id reaches this code as an
-    # argument, so the shell running `mo clean` (and any wrapper above it)
+    # argument, so the shell running `digg clean` (and any wrapper above it)
     # carries that id in its own argv. Walking the ppid chain drops the whole
     # invoking tree, which is also what excludes the `du` and `find` children
     # forked to MEASURE the very directory being judged.
@@ -298,7 +298,7 @@ _diggory_process_table() {
                 if (base == "du" || base == "find" || base == "mdfind" ||
                     base == "ps" || base == "grep" || base == "stat" ||
                     base == "ls" || base == "rm") continue
-                if (index(tolower(text[pid]), "com.tw93.diggory") > 0) continue
+                if (index(tolower(text[pid]), "com.superstack.diggory") > 0) continue
                 print text[pid]
             }
         }'); then
@@ -355,7 +355,7 @@ _diggory_user_cache_owner_process_state() {
     # Feed the table by here-string, never through a pipe. `grep -q` exits on
     # its first match, and the printf still writing into that closed pipe takes
     # SIGPIPE, which bash reports as "printf: write error: Broken pipe" on
-    # stderr; during `mo clean` that lands in the middle of the user's output.
+    # stderr; during `digg clean` that lands in the middle of the user's output.
     local state=1
     if LC_ALL=C grep -qiF -- "$owner" <<< "$table"; then
         state=0
@@ -1187,7 +1187,7 @@ _diggory_privileged_path_has_mutable_ancestor() {
             if [[ ${EUID:-0} -eq "$invoking_uid" ]]; then
                 [[ -w "$probe" ]] && return 0
             elif [[ ${EUID:-0} -eq 0 ]]; then
-                # Under `sudo mo`, the shell's -w probe reflects root rather
+                # Under `sudo digg`, the shell's -w probe reflects root rather
                 # than the invoking user. Drop authority for the ACL check so
                 # immutable system parents do not become false positives.
                 local acl_probe_rc=0
@@ -1945,7 +1945,7 @@ _diggory_create_privileged_trash_stage() {
 # raced with a concurrent Diggory process that had just validated it and was about
 # to mktemp inside, turning a safe Trash move into a spurious failure.
 #
-# `mo remove` deliberately leaves it behind too. It is an empty root-owned
+# `digg remove` deliberately leaves it behind too. It is an empty root-owned
 # directory, and removing it would add a privileged step to an uninstall that
 # may need no privileges at all: a ~/.local-only install would meet a sudo
 # prompt for nothing. Any non-empty state is a payload a failed Trash move

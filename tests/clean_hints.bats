@@ -80,7 +80,7 @@ EOT2
     [ "$status" -eq 0 ]
     [[ "$output" == *"Build artifacts"* ]] || return 1
     [[ "$output" == *"5+ dirs, 2.00MB+"* ]] || return 1
-    [[ "$output" == *"mo purge"* ]] || return 1
+    [[ "$output" == *"digg purge"* ]] || return 1
 }
 
 @test "show_project_artifact_hint_notice points zero-size samples to include-empty (#869)" {
@@ -104,7 +104,7 @@ EOT2B
 
     [ "$status" -eq 0 ]
     [[ "$output" == *", 0B"* ]] || return 1
-    [[ "$output" == *"mo purge --include-empty"* ]] || return 1
+    [[ "$output" == *"digg purge --include-empty"* ]] || return 1
 }
 
 @test "show_project_artifact_hint_notice reports skipped slow project artifact scans (#1053)" {
@@ -126,7 +126,7 @@ EOT2C
 
     [ "$status" -eq 0 ]
     [[ "$output" == *"Build artifacts · scan skipped"* ]] || return 1
-    [[ "$output" == *"mo purge"* ]] || return 1
+    [[ "$output" == *"digg purge"* ]] || return 1
 }
 
 @test "probe_project_artifact_hints stops at the wall-clock budget (#1053)" {

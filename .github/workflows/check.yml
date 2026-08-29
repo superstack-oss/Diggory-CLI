@@ -60,7 +60,7 @@ jobs:
       - name: Check Go formatting (goimports -l)
         run: |
           export PATH=$(go env GOPATH)/bin:$PATH
-          UNFORMATTED=$(goimports -l -local github.com/tw93/diggory ./cmd ./internal)
+          UNFORMATTED=$(goimports -l -local github.com/superstack-oss/Diggory-CLI ./cmd ./internal)
           if [[ -n "$UNFORMATTED" ]]; then
             echo "::error::Go files are not formatted:"
             echo "$UNFORMATTED"

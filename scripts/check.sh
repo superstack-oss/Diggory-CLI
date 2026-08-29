@@ -128,7 +128,7 @@ if [[ "$MODE" == "format" ]]; then
 
     if command -v goimports > /dev/null 2>&1; then
         echo -e "${YELLOW}Formatting Go code, goimports...${NC}"
-        goimports -w -local github.com/tw93/diggory ./cmd ./internal
+        goimports -w -local github.com/superstack-oss/Diggory-CLI ./cmd ./internal
         echo -e "${GREEN}${ICON_SUCCESS} Go formatting complete${NC}\n"
     elif command -v go > /dev/null 2>&1; then
         echo -e "${YELLOW}Formatting Go code, gofmt...${NC}"
@@ -153,7 +153,7 @@ if [[ "$MODE" != "check" ]]; then
 
     if command -v goimports > /dev/null 2>&1; then
         echo -e "${YELLOW}2. Formatting Go code, goimports...${NC}"
-        goimports -w -local github.com/tw93/diggory ./cmd ./internal
+        goimports -w -local github.com/superstack-oss/Diggory-CLI ./cmd ./internal
         echo -e "${GREEN}${ICON_SUCCESS} Go formatting applied${NC}\n"
     elif command -v go > /dev/null 2>&1; then
         echo -e "${YELLOW}2. Formatting Go code, gofmt...${NC}"

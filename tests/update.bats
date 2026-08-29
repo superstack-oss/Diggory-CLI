@@ -29,11 +29,11 @@ make_manual_diggory_install() {
 		-e "s|^SCRIPT_DIR=.*|SCRIPT_DIR=\"$config_dir\"|" \
 		-e "s/^VERSION=\".*\"$/VERSION=\"$version\"/" \
 		"$PROJECT_ROOT/diggory" > "$install_dir/diggory"
-	cp "$PROJECT_ROOT/mo" "$install_dir/mo"
+	cp "$PROJECT_ROOT/digg" "$install_dir/digg"
 	cp -R "$PROJECT_ROOT/lib" "$config_dir/lib"
 	printf '#!/bin/bash\nexit 0\n' > "$config_dir/bin/analyze-go"
 	printf '#!/bin/bash\nexit 0\n' > "$config_dir/bin/status-go"
-	chmod +x "$install_dir/diggory" "$install_dir/mo" "$config_dir/bin/analyze-go" "$config_dir/bin/status-go"
+	chmod +x "$install_dir/diggory" "$install_dir/digg" "$config_dir/bin/analyze-go" "$config_dir/bin/status-go"
 }
 
 make_homebrew_shadow() {
@@ -44,7 +44,7 @@ make_homebrew_shadow() {
 	cp -R "$PROJECT_ROOT/lib" "$bin_dir/lib"
 	chmod +x "$cellar_diggory"
 	ln -sf "$cellar_diggory" "$bin_dir/diggory"
-	ln -sf "$cellar_diggory" "$bin_dir/mo"
+	ln -sf "$cellar_diggory" "$bin_dir/digg"
 
 	cat > "$bin_dir/brew" << 'SCRIPT'
 #!/usr/bin/env bash
@@ -208,7 +208,7 @@ INSTALLER
 	exit 0
 fi
 
-if [[ "\$url" == *"api.github.com/repos/tw93/diggory/commits/main"* ]]; then
+if [[ "\$url" == *"api.github.com/repos/superstack-oss/Diggory-CLI/commits/main"* ]]; then
 	printf '{"sha":"%s"}\n' "$latest_commit"
 	exit 0
 fi
@@ -299,7 +299,7 @@ SCRIPT
 	chmod +x "$bin_dir/curl" "$bin_dir/git"
 }
 
-@test "mo update repairs missing helpers at the current stable version (#1193)" {
+@test "digg update repairs missing helpers at the current stable version (#1193)" {
 	local manual_bin="$TEST_ROOT/manual/bin"
 	local manual_config="$TEST_ROOT/manual/config"
 	local fake_bin="$TEST_ROOT/fake-bin"
@@ -322,7 +322,7 @@ SCRIPT
 		CURL_URL_LOG="$curl_url_log" \
 		INSTALLER_ARGS_LOG="$installer_args_log" \
 		INSTALLER_VERSION_LOG="$installer_version_log" \
-		"$manual_bin/mo" update
+		"$manual_bin/digg" update
 
 	[ "$status" -eq 0 ]
 	[[ "$output" == *"Diggory installation needs repair"* ]] || return 1
@@ -334,7 +334,7 @@ SCRIPT
 	[ "$(cat "$installer_version_log")" = "V$current_version" ]
 }
 
-@test "mo update retries transient installer download failures" {
+@test "digg update retries transient installer download failures" {
 	local manual_bin="$TEST_ROOT/manual/bin"
 	local manual_config="$TEST_ROOT/manual/config"
 	local fake_bin="$TEST_ROOT/fake-bin"
@@ -361,7 +361,7 @@ SCRIPT
 		CURL_TRANSIENT_STATUS=35 \
 		INSTALLER_ARGS_LOG="$installer_args_log" \
 		INSTALLER_VERSION_LOG="$installer_version_log" \
-		"$manual_bin/mo" update
+		"$manual_bin/digg" update
 
 	[ "$status" -eq 0 ] || return 1
 	[ -f "$installer_args_log" ] || return 1
@@ -369,7 +369,7 @@ SCRIPT
 	[ "$(cat "$installer_version_log")" = "V$current_version" ]
 }
 
-@test "mo update reports unreachable version discovery instead of exiting silently" {
+@test "digg update reports unreachable version discovery instead of exiting silently" {
 	local manual_bin="$TEST_ROOT/manual/bin"
 	local manual_config="$TEST_ROOT/manual/config"
 	local fake_bin="$TEST_ROOT/fake-bin"
@@ -380,7 +380,7 @@ SCRIPT
 
 	# Every request fails the way a flaky local proxy fails. Version discovery
 	# runs inside `latest=$(...)`, so before the fix the nonzero pipeline tripped
-	# errexit and killed `mo update` with an empty screen and no diagnosis.
+	# errexit and killed `digg update` with an empty screen and no diagnosis.
 	cat > "$fake_bin/curl" << 'SCRIPT'
 #!/usr/bin/env bash
 printf 'x\n' >> "$CURL_ATTEMPT_LOG"
@@ -393,7 +393,7 @@ SCRIPT
 		HOME="$HOME" \
 		PATH="$fake_bin:/usr/bin:/bin" \
 		CURL_ATTEMPT_LOG="$curl_attempt_log" \
-		"$manual_bin/mo" update
+		"$manual_bin/digg" update
 
 	[ "$status" -eq 1 ] || return 1
 	[[ "$output" == *"Unable to check for updates"* ]] || return 1
@@ -404,7 +404,7 @@ SCRIPT
 	[ "$(wc -l < "$curl_attempt_log" | tr -d ' ')" -eq 6 ]
 }
 
-@test "mo update announces the check before the bounded retry, not after it" {
+@test "digg update announces the check before the bounded retry, not after it" {
 	local manual_bin="$TEST_ROOT/manual/bin"
 	local manual_config="$TEST_ROOT/manual/config"
 	local fake_bin="$TEST_ROOT/fake-bin"
@@ -430,7 +430,7 @@ SCRIPT
 	# sampling window.
 	env HOME="$HOME" PATH="$fake_bin:/usr/bin:/bin" \
 		CURL_ATTEMPT_LOG="$curl_attempt_log" \
-		"$manual_bin/mo" update > "$out_file" 2>&1 &
+		"$manual_bin/digg" update > "$out_file" 2>&1 &
 	local update_pid=$!
 
 	local waited=0
@@ -452,7 +452,7 @@ SCRIPT
 	[[ "$mid_output" != *"Unable to check for updates"* ]]
 }
 
-@test "mo update targets the invoked manual install, not another Homebrew diggory in PATH" {
+@test "digg update targets the invoked manual install, not another Homebrew diggory in PATH" {
 	local manual_bin="$TEST_ROOT/manual/bin"
 	local manual_config="$TEST_ROOT/manual/config"
 	local fake_brew_bin="$TEST_ROOT/homebrew/bin"
@@ -478,15 +478,15 @@ SCRIPT
 		CURL_URL_LOG="$curl_url_log" \
 		INSTALLER_ARGS_LOG="$installer_args_log" \
 		INSTALLER_VERSION_LOG="$installer_version_log" \
-		"$manual_bin/mo" update
+		"$manual_bin/digg" update
 
 	[ "$status" -eq 0 ]
 	[ -f "$installer_args_log" ]
 	grep -q -- "--prefix" "$installer_args_log"
 	grep -q -- "$manual_bin" "$installer_args_log"
 	[ "$(cat "$installer_version_log")" = "V$current_version" ]
-	grep -q "raw.githubusercontent.com/tw93/diggory/V${current_version#V}/install.sh" "$curl_url_log"
-	if grep -q "raw.githubusercontent.com/tw93/diggory/main/install.sh" "$curl_url_log"; then
+	grep -q "raw.githubusercontent.com/superstack-oss/Diggory-CLI/V${current_version#V}/install.sh" "$curl_url_log"
+	if grep -q "raw.githubusercontent.com/superstack-oss/Diggory-CLI/main/install.sh" "$curl_url_log"; then
 		return 1
 	fi
 	if grep -q '^upgrade diggory$' "$brew_log"; then
@@ -494,7 +494,7 @@ SCRIPT
 	fi
 }
 
-@test "mo update --nightly skips reinstall when the installed commit is current" {
+@test "digg update --nightly skips reinstall when the installed commit is current" {
 	local manual_bin="$TEST_ROOT/manual/bin"
 	local manual_config="$TEST_ROOT/manual/config"
 	local fake_bin="$TEST_ROOT/fake-bin"
@@ -515,18 +515,18 @@ SCRIPT
 		CURL_URL_LOG="$curl_url_log" \
 		INSTALLER_ARGS_LOG="$installer_args_log" \
 		INSTALLER_VERSION_LOG="$installer_version_log" \
-		"$manual_bin/mo" update --nightly
+		"$manual_bin/digg" update --nightly
 
 	[ "$status" -eq 0 ]
 	[[ "$output" == *"Already on latest nightly, e31d46f"* ]] || return 1
 	[ ! -e "$installer_args_log" ]
-	grep -q "api.github.com/repos/tw93/diggory/commits/main" "$curl_url_log"
-	if grep -q "raw.githubusercontent.com/tw93/diggory/main/install.sh" "$curl_url_log"; then
+	grep -q "api.github.com/repos/superstack-oss/Diggory-CLI/commits/main" "$curl_url_log"
+	if grep -q "raw.githubusercontent.com/superstack-oss/Diggory-CLI/main/install.sh" "$curl_url_log"; then
 		return 1
 	fi
 }
 
-@test "mo update --nightly falls back to git when the commit API is unavailable" {
+@test "digg update --nightly falls back to git when the commit API is unavailable" {
 	local manual_bin="$TEST_ROOT/manual/bin"
 	local manual_config="$TEST_ROOT/manual/config"
 	local fake_bin="$TEST_ROOT/fake-bin"
@@ -554,17 +554,17 @@ SCRIPT
 		GIT_CONFIG_PARAMETERS=poison-rewrite \
 		GIT_EXEC_PATH="$TEST_ROOT/untrusted-git-exec" \
 		INSTALLER_ARGS_LOG="$installer_args_log" \
-		"$manual_bin/mo" update --nightly
+		"$manual_bin/digg" update --nightly
 
 	[ "$status" -eq 0 ] || return 1
 	[[ "$output" == *"Already on latest nightly, e31d46f"* ]] || return 1
 	[ ! -e "$installer_args_log" ] || return 1
 	[ ! -e "$git_poison_log" ] || return 1
-	grep -qF 'ls-remote https://github.com/tw93/diggory.git refs/heads/main' "$git_args_log" || return 1
+	grep -qF 'ls-remote https://github.com/superstack-oss/Diggory-CLI.git refs/heads/main' "$git_args_log" || return 1
 	[ "$(cat "$git_env_log")" = '0|/usr/bin/false|/usr/bin/false|1|/dev/null|0|C' ] || return 1
 	grep -qF -- '-c credential.helper= -c core.askPass=/usr/bin/false' "$git_args_log" || return 1
 	grep -qF -- '-c protocol.allow=never -c protocol.https.allow=always -c http.sslVerify=true -C /' "$git_args_log" || return 1
-	if grep -q 'raw.githubusercontent.com/tw93/diggory/main/install.sh' "$curl_url_log"; then
+	if grep -q 'raw.githubusercontent.com/superstack-oss/Diggory-CLI/main/install.sh' "$curl_url_log"; then
 		return 1
 	fi
 }
@@ -603,7 +603,7 @@ background_commit=$(get_latest_commit_from_github api-only)
 
 explicit_commit=$(get_latest_commit_from_github)
 [[ "$explicit_commit" == "$LATEST_COMMIT" ]] || exit 1
-grep -qF 'ls-remote https://github.com/tw93/diggory.git refs/heads/main' "$GIT_ARGS_LOG"
+grep -qF 'ls-remote https://github.com/superstack-oss/Diggory-CLI.git refs/heads/main' "$GIT_ARGS_LOG"
 
 get_install_channel() {
 	printf 'nightly\n'
@@ -631,7 +631,7 @@ INNER
 	}
 }
 
-@test "mo update --nightly refuses an unforced reinstall when HEAD is unknown" {
+@test "digg update --nightly refuses an unforced reinstall when HEAD is unknown" {
 	local manual_bin="$TEST_ROOT/manual/bin"
 	local manual_config="$TEST_ROOT/manual/config"
 	local fake_bin="$TEST_ROOT/fake-bin"
@@ -652,19 +652,19 @@ INNER
 		CURL_URL_LOG="$curl_url_log" \
 		GIT_ARGS_LOG="$git_args_log" \
 		INSTALLER_ARGS_LOG="$installer_args_log" \
-		"$manual_bin/mo" update --nightly
+		"$manual_bin/digg" update --nightly
 
 	[ "$status" -eq 1 ] || return 1
 	[[ "$output" == *"Unable to resolve latest nightly commit"* ]] || return 1
-	[[ "$output" == *"mo update --nightly --force"* ]] || return 1
+	[[ "$output" == *"digg update --nightly --force"* ]] || return 1
 	[ ! -e "$installer_args_log" ] || return 1
-	grep -qF 'ls-remote https://github.com/tw93/diggory.git refs/heads/main' "$git_args_log" || return 1
-	if grep -q 'raw.githubusercontent.com/tw93/diggory/main/install.sh' "$curl_url_log"; then
+	grep -qF 'ls-remote https://github.com/superstack-oss/Diggory-CLI.git refs/heads/main' "$git_args_log" || return 1
+	if grep -q 'raw.githubusercontent.com/superstack-oss/Diggory-CLI/main/install.sh' "$curl_url_log"; then
 		return 1
 	fi
 }
 
-@test "mo update --nightly rejects partial output from a failed or timed-out git probe" {
+@test "digg update --nightly rejects partial output from a failed or timed-out git probe" {
 	local manual_bin="$TEST_ROOT/manual/bin"
 	local manual_config="$TEST_ROOT/manual/config"
 	local fake_bin="$TEST_ROOT/fake-bin"
@@ -692,7 +692,7 @@ INNER
 			CURL_URL_LOG="$curl_url_log" \
 			GIT_ARGS_LOG="$git_args_log" \
 			INSTALLER_ARGS_LOG="$installer_args_log" \
-			"$manual_bin/mo" update --nightly
+			"$manual_bin/digg" update --nightly
 		elapsed=$((SECONDS - start))
 
 		[ "$status" -eq 1 ] || return 1
@@ -702,7 +702,7 @@ INNER
 	done
 }
 
-@test "mo update --nightly forwards the git-resolved commit to the installer" {
+@test "digg update --nightly forwards the git-resolved commit to the installer" {
 	local manual_bin="$TEST_ROOT/manual/bin"
 	local manual_config="$TEST_ROOT/manual/config"
 	local fake_bin="$TEST_ROOT/fake-bin"
@@ -726,15 +726,15 @@ INNER
 		GIT_ARGS_LOG="$git_args_log" \
 		INSTALLER_ARGS_LOG="$installer_args_log" \
 		INSTALLER_COMMIT_LOG="$installer_commit_log" \
-		"$manual_bin/mo" update --nightly
+		"$manual_bin/digg" update --nightly
 
 	[ "$status" -eq 0 ] || return 1
 	[ -f "$installer_args_log" ] || return 1
 	[ "$(cat "$installer_commit_log")" = "$latest_commit" ] || return 1
-	grep -q 'raw.githubusercontent.com/tw93/diggory/main/install.sh' "$curl_url_log" || return 1
+	grep -q 'raw.githubusercontent.com/superstack-oss/Diggory-CLI/main/install.sh' "$curl_url_log" || return 1
 }
 
-@test "mo update --nightly --force reinstalls even when the installed commit is current" {
+@test "digg update --nightly --force reinstalls even when the installed commit is current" {
 	local manual_bin="$TEST_ROOT/manual/bin"
 	local manual_config="$TEST_ROOT/manual/config"
 	local fake_bin="$TEST_ROOT/fake-bin"
@@ -757,17 +757,17 @@ INNER
 		INSTALLER_ARGS_LOG="$installer_args_log" \
 		INSTALLER_VERSION_LOG="$installer_version_log" \
 		INSTALLER_COMMIT_LOG="$installer_commit_log" \
-		"$manual_bin/mo" update --nightly --force
+		"$manual_bin/digg" update --nightly --force
 
 	[ "$status" -eq 0 ]
 	[ -f "$installer_args_log" ]
 	grep -q -- "--prefix" "$installer_args_log"
 	[ "$(cat "$installer_version_log")" = "main" ]
 	[ "$(cat "$installer_commit_log")" = "$latest_commit" ] || return 1
-	grep -q "raw.githubusercontent.com/tw93/diggory/main/install.sh" "$curl_url_log"
+	grep -q "raw.githubusercontent.com/superstack-oss/Diggory-CLI/main/install.sh" "$curl_url_log"
 }
 
-@test "mo update tells installer to reuse sudo after parent authentication" {
+@test "digg update tells installer to reuse sudo after parent authentication" {
 	local manual_bin="$TEST_ROOT/manual/bin"
 	local manual_config="$TEST_ROOT/manual/config"
 	local fake_bin="$TEST_ROOT/fake-bin"
@@ -802,7 +802,7 @@ SCRIPT
 		INSTALLER_VERSION_LOG="$installer_version_log" \
 		INSTALLER_SUDO_AUTH_LOG="$installer_sudo_auth_log" \
 		SUDO_LOG="$sudo_log" \
-		"$manual_bin/mo" update --force
+		"$manual_bin/digg" update --force
 
 	chmod u+w "$manual_bin"
 
@@ -810,10 +810,10 @@ SCRIPT
 	[ -f "$installer_sudo_auth_log" ]
 	[ "$(cat "$installer_sudo_auth_log")" = "1" ]
 	grep -q -- "-n true" "$sudo_log"
-	grep -q "raw.githubusercontent.com/tw93/diggory/V${current_version#V}/install.sh" "$curl_url_log"
+	grep -q "raw.githubusercontent.com/superstack-oss/Diggory-CLI/V${current_version#V}/install.sh" "$curl_url_log"
 }
 
-@test "mo update aborts when the sudo session cannot reach the installer child" {
+@test "digg update aborts when the sudo session cannot reach the installer child" {
 	local manual_bin="$TEST_ROOT/manual/bin"
 	local manual_config="$TEST_ROOT/manual/config"
 	local fake_bin="$TEST_ROOT/fake-bin"
@@ -860,13 +860,13 @@ SCRIPT
 		INSTALLER_ARGS_LOG="$installer_args_log" \
 		SUDO_LOG="$sudo_log" \
 		SUDO_COUNT="$sudo_count" \
-		"$manual_bin/mo" update --force
+		"$manual_bin/digg" update --force
 
 	chmod u+w "$manual_bin"
 
 	[ "$status" -eq 1 ] || return 1
 	[[ "$output" == *"Admin access cannot be handed to the installer"* ]] || return 1
-	[[ "$output" == *"sudo -v && mo update"* ]] || return 1
+	[[ "$output" == *"sudo -v && digg update"* ]] || return 1
 	[ ! -e "$installer_args_log" ] || return 1
 	[ "$(cat "$sudo_count")" -ge 2 ] || return 1
 }
@@ -906,7 +906,7 @@ EOF
 	[ "$status" -eq 0 ]
 }
 
-@test "mo update keeps Homebrew installs on the Homebrew update path" {
+@test "digg update keeps Homebrew installs on the Homebrew update path" {
 	local fake_brew_bin="$TEST_ROOT/homebrew/bin"
 	local fake_brew_diggory="$TEST_ROOT/homebrew/Cellar/diggory/9.9.9/bin/diggory"
 	local brew_log="$TEST_ROOT/brew.log"
@@ -918,7 +918,7 @@ EOF
 		HOME="$HOME" \
 		PATH="$fake_brew_bin:/usr/bin:/bin" \
 		BREW_LOG="$brew_log" \
-		"$fake_brew_bin/mo" update
+		"$fake_brew_bin/digg" update
 
 	[ "$status" -eq 0 ]
 	grep -q '^update$' "$brew_log"
@@ -938,17 +938,17 @@ run_with_timeout() {
 	printf '%s|%s\n' "$timeout" "$*" >> "$trace"
 	case "$*" in
 		"brew upgrade diggory") printf 'already installed\n' ;;
-		"mo --version") printf 'Diggory version 9.9.9\n' ;;
+		"digg --version") printf 'Diggory version 9.9.9\n' ;;
 	esac
 }
-mo() {
+digg() {
 	printf 'UNEXPECTED_DIRECT_MO\n'
 	return 1
 }
-export -f mo
+export -f digg
 
 update_via_homebrew "1.0.0"
-grep -qFx "$DIGGORY_TIMEOUT_QUICK_DETECT_SEC|mo --version" "$trace"
+grep -qFx "$DIGGORY_TIMEOUT_QUICK_DETECT_SEC|digg --version" "$trace"
 EOF
 
 	[ "$status" -eq 0 ] || {
@@ -959,7 +959,7 @@ EOF
 	[[ "$output" != *"UNEXPECTED_DIRECT_MO"* ]]
 }
 
-@test "mo update preserves actionable Homebrew diagnostics on failure (#1247)" {
+@test "digg update preserves actionable Homebrew diagnostics on failure (#1247)" {
 	local fake_brew_bin="$TEST_ROOT/homebrew/bin"
 	local fake_brew_diggory="$TEST_ROOT/homebrew/Cellar/diggory/9.9.9/bin/diggory"
 	local brew_log="$TEST_ROOT/brew.log"
@@ -975,7 +975,7 @@ EOF
 		BREW_LOG="$brew_log" \
 		BREW_UPGRADE_OUTPUT="$brew_upgrade_output" \
 		BREW_UPGRADE_STATUS=1 \
-		"$fake_brew_bin/mo" update
+		"$fake_brew_bin/digg" update
 
 	[ "$status" -ne 0 ]
 	[[ "$output" == *"Homebrew upgrade failed"* ]] || return 1
@@ -983,7 +983,7 @@ EOF
 	[[ "$output" == *"https://developer.apple.com/download/all/"* ]]
 }
 
-@test "mo update trusts a nonzero Homebrew exit without Error text (#1247)" {
+@test "digg update trusts a nonzero Homebrew exit without Error text (#1247)" {
 	local fake_brew_bin="$TEST_ROOT/homebrew/bin"
 	local fake_brew_diggory="$TEST_ROOT/homebrew/Cellar/diggory/9.9.9/bin/diggory"
 	local brew_log="$TEST_ROOT/brew.log"
@@ -997,7 +997,7 @@ EOF
 		BREW_LOG="$brew_log" \
 		BREW_UPGRADE_OUTPUT="The upgrade command was interrupted" \
 		BREW_UPGRADE_STATUS=124 \
-		"$fake_brew_bin/mo" update
+		"$fake_brew_bin/digg" update
 
 	[ "$status" -ne 0 ]
 	[[ "$output" == *"Homebrew upgrade failed"* ]] || return 1
@@ -1005,7 +1005,7 @@ EOF
 	[[ "$output" != *"Updated to latest version"* ]]
 }
 
-@test "mo update never treats mixed failure output as already installed" {
+@test "digg update never treats mixed failure output as already installed" {
 	local fake_brew_bin="$TEST_ROOT/homebrew/bin"
 	local fake_brew_diggory="$TEST_ROOT/homebrew/Cellar/diggory/9.9.9/bin/diggory"
 	local brew_log="$TEST_ROOT/brew.log"
@@ -1021,7 +1021,7 @@ EOF
 		BREW_LOG="$brew_log" \
 		BREW_UPGRADE_OUTPUT="$brew_upgrade_output" \
 		BREW_UPGRADE_STATUS=1 \
-		"$fake_brew_bin/mo" update
+		"$fake_brew_bin/digg" update
 
 	[ "$status" -ne 0 ]
 	[[ "$output" == *"Homebrew upgrade failed"* ]] || return 1
@@ -1133,7 +1133,7 @@ INSTALLER
 	exit 0
 fi
 
-if [[ "$url" == *"api.github.com/repos/tw93/diggory/commits/main"* ]]; then
+if [[ "$url" == *"api.github.com/repos/superstack-oss/Diggory-CLI/commits/main"* ]]; then
 	printf '{"sha":"%s"}\n' "$FALSE_SUCCESS_COMMIT"
 	exit 0
 fi
@@ -1149,7 +1149,7 @@ SCRIPT
 	chmod +x "$bin_dir/curl"
 }
 
-@test "mo update rejects staged installer success when the stable generation did not change" {
+@test "digg update rejects staged installer success when the stable generation did not change" {
 	local manual_bin="$TEST_ROOT/false-stable/bin"
 	local manual_config="$TEST_ROOT/false-stable/config"
 	local fake_bin="$TEST_ROOT/false-stable/fake-bin"
@@ -1163,7 +1163,7 @@ SCRIPT
 	run env HOME="$HOME" PATH="$fake_bin:/usr/bin:/bin" \
 		FALSE_SUCCESS_VERSION="$current_version" \
 		FALSE_SUCCESS_COMMIT="abc1234aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
-		"$manual_bin/mo" update
+		"$manual_bin/digg" update
 
 	[ "$status" -ne 0 ]
 	[[ "$output" == *"Retrying with a direct reinstall"* ]] || return 1
@@ -1172,7 +1172,7 @@ SCRIPT
 	[ "$("$manual_bin/diggory" --version | awk 'NF {print $NF; exit}')" = "0.0.1" ]
 }
 
-@test "mo update rejects staged installer success when nightly receipt and commit stay stale" {
+@test "digg update rejects staged installer success when nightly receipt and commit stay stale" {
 	local manual_bin="$TEST_ROOT/false-nightly/bin"
 	local manual_config="$TEST_ROOT/false-nightly/config"
 	local fake_bin="$TEST_ROOT/false-nightly/fake-bin"
@@ -1185,7 +1185,7 @@ SCRIPT
 
 	run env HOME="$HOME" PATH="$fake_bin:/usr/bin:/bin" \
 		FALSE_SUCCESS_VERSION="1.49.0" FALSE_SUCCESS_COMMIT="$latest_commit" \
-		"$manual_bin/mo" update --nightly
+		"$manual_bin/digg" update --nightly
 
 	[ "$status" -ne 0 ]
 	[[ "$output" == *"Retrying with a direct reinstall"* ]] || return 1
@@ -1194,7 +1194,7 @@ SCRIPT
 	grep -qFx 'COMMIT_HASH=deadbee' "$manual_config/install_channel"
 }
 
-@test "mo update self-heals with a direct reinstall when the staged installer fails (#1297)" {
+@test "digg update self-heals with a direct reinstall when the staged installer fails (#1297)" {
 	local manual_bin="$TEST_ROOT/manual/bin"
 	local manual_config="$TEST_ROOT/manual/config"
 	local fake_bin="$TEST_ROOT/fake-bin"
@@ -1217,7 +1217,7 @@ SCRIPT
 		CURL_URL_LOG="$curl_url_log" \
 		INSTALLER_ARGS_LOG="$installer_args_log" \
 		HEAL_LOG="$heal_log" \
-		"$manual_bin/mo" update
+		"$manual_bin/digg" update
 
 	[ "$status" -eq 0 ] || return 1
 	grep -q -- "--update" "$installer_args_log" || return 1
@@ -1226,7 +1226,7 @@ SCRIPT
 	[ "$(cat "$heal_log")" = "V$current_version|$manual_bin|$manual_config" ]
 }
 
-@test "mo update prints the manual reinstall command when self-heal fails too" {
+@test "digg update prints the manual reinstall command when self-heal fails too" {
 	local manual_bin="$TEST_ROOT/manual/bin"
 	local manual_config="$TEST_ROOT/manual/config"
 	local fake_bin="$TEST_ROOT/fake-bin"
@@ -1249,7 +1249,7 @@ SCRIPT
 		CURL_URL_LOG="$curl_url_log" \
 		INSTALLER_ARGS_LOG="$installer_args_log" \
 		HEAL_LOG="$heal_log" \
-		"$manual_bin/mo" update
+		"$manual_bin/digg" update
 
 	[ "$status" -ne 0 ] || return 1
 	[[ "$output" == *"Retrying with a direct reinstall"* ]] || return 1
@@ -1290,7 +1290,7 @@ INSTALLER
 	exit 0
 fi
 
-if [[ "\$url" == *"api.github.com/repos/tw93/diggory/commits/main"* ]]; then
+if [[ "\$url" == *"api.github.com/repos/superstack-oss/Diggory-CLI/commits/main"* ]]; then
 	printf '{"sha":"%s"}\n' "$latest_commit"
 	exit 0
 fi
@@ -1329,7 +1329,7 @@ SCRIPT
 	chmod +x "$bin_dir/curl"
 }
 
-@test "mo update --nightly self-heals the selected install and verifies the main commit" {
+@test "digg update --nightly self-heals the selected install and verifies the main commit" {
 	local manual_bin="$TEST_ROOT/manual-nightly/bin"
 	local manual_config="$TEST_ROOT/manual-nightly/config"
 	local fake_bin="$TEST_ROOT/nightly-fake-bin"
@@ -1345,7 +1345,7 @@ SCRIPT
 		PATH="$fake_bin:/usr/bin:/bin" \
 		LATEST_COMMIT="$latest_commit" \
 		HEAL_LOG="$heal_log" \
-		"$manual_bin/mo" update --nightly
+		"$manual_bin/digg" update --nightly
 
 	[ "$status" -eq 0 ] || {
 		echo "$output"
@@ -1526,7 +1526,7 @@ command() {
 	builtin command "$@"
 }
 wget() {
-	if [[ "$*" == *"api.github.com/repos/tw93/diggory/commits/main"* ]]; then
+	if [[ "$*" == *"api.github.com/repos/superstack-oss/Diggory-CLI/commits/main"* ]]; then
 		printf '{"sha":"%s"}\n' "$expected_commit"
 		return 0
 	fi

@@ -2,7 +2,7 @@
 
 # Regression for #1344: a Mail Downloads directory that cannot be sized within
 # the disk-verify timeout (exit 124) must be skipped as a single target, not
-# end the whole `mo clean` run at User essentials. Signal-class statuses
+# end the whole `digg clean` run at User essentials. Signal-class statuses
 # (>=128) keep their cancellation semantics.
 
 setup_file() {
@@ -141,7 +141,7 @@ EOF
     [[ "$output" != *"skipped (sizing unavailable)"* ]] || return 1
 }
 
-@test "mo clean completes when the Mail Downloads du stalls (#1344)" {
+@test "digg clean completes when the Mail Downloads du stalls (#1344)" {
     mkdir -p "$HOME/Library/Caches"
     mkdir -p "$HOME/Library/Containers/com.apple.mail/Data/Library/Mail Downloads"
     echo x > "$HOME/Library/Containers/com.apple.mail/Data/Library/Mail Downloads/old.docx"

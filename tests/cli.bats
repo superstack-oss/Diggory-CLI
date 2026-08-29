@@ -110,10 +110,10 @@ setup() {
 @test "diggory --help prints command overview" {
 	run env HOME="$HOME" "$PROJECT_ROOT/diggory" --help
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"mo clean"* ]] || return 1
-	[[ "$output" == *"mo optimize"* ]] || return 1
-	[[ "$output" == *"mo analyze"* ]] || return 1
-	[[ "$output" != *"mo optimise"* ]]
+	[[ "$output" == *"digg clean"* ]] || return 1
+	[[ "$output" == *"digg optimize"* ]] || return 1
+	[[ "$output" == *"digg analyze"* ]] || return 1
+	[[ "$output" != *"digg optimise"* ]]
 }
 
 @test "diggory --version reports script version" {
@@ -161,13 +161,13 @@ EOF
 @test "diggory --help does not list check command" {
 	run env HOME="$HOME" "$PROJECT_ROOT/diggory" --help
 	[ "$status" -eq 0 ]
-	[[ "$output" != *"mo check"* ]]
+	[[ "$output" != *"digg check"* ]]
 }
 
 @test "diggory --help documents history command" {
 	run env HOME="$HOME" "$PROJECT_ROOT/diggory" --help
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"mo history"* ]]
+	[[ "$output" == *"digg history"* ]]
 }
 
 @test "diggory check is not a public command" {
@@ -268,7 +268,7 @@ HOME="$(mktemp -d)"
 export HOME DIGGORY_TEST_MODE=1 DIGGORY_SKIP_MAIN=1
 mkdir -p "$HOME/.cache/diggory"
 msg_cache="$HOME/.cache/diggory/update_message"
-printf 'Update 1.43.0 available, run mo update\n' > "$msg_cache"
+printf 'Update 1.43.0 available, run digg update\n' > "$msg_cache"
 touch -t 200001010000 "$msg_cache"
 source "$PROJECT_ROOT/diggory"
 message="$(read_update_message_cache "$msg_cache")"
@@ -344,12 +344,12 @@ EOF
 	[[ "$output" == *"Touch ID"* ]]
 }
 
-@test "mo optimize command is recognized" {
+@test "digg optimize command is recognized" {
 	run /bin/bash -c "grep -Eq '\"optimi[sz]e\"[[:space:]]*\\|[[:space:]]*\"optimi[sz]e\"' '$PROJECT_ROOT/diggory'"
 	[ "$status" -eq 0 ]
 }
 
-@test "mo analyze binary is valid" {
+@test "digg analyze binary is valid" {
 	if [[ -f "$PROJECT_ROOT/bin/analyze-go" ]]; then
 		[ -x "$PROJECT_ROOT/bin/analyze-go" ]
 		run file "$PROJECT_ROOT/bin/analyze-go"
@@ -359,7 +359,7 @@ EOF
 	fi
 }
 
-@test "mo clean --debug creates debug log file" {
+@test "digg clean --debug creates debug log file" {
 	mkdir -p "$HOME/.config/diggory"
 	run env HOME="$HOME" TERM="xterm-256color" DIGGORY_TEST_MODE=1 MO_DEBUG=1 "$PROJECT_ROOT/diggory" clean --dry-run
 	[ "$status" -eq 0 ]
@@ -374,7 +374,7 @@ EOF
 	[[ "$DIGGORY_OUTPUT" =~ "Debug session log saved to" ]]
 }
 
-@test "mo clean without debug does not show debug log path" {
+@test "digg clean without debug does not show debug log path" {
 	mkdir -p "$HOME/.config/diggory"
 	run env HOME="$HOME" TERM="xterm-256color" DIGGORY_TEST_MODE=1 MO_DEBUG=0 "$PROJECT_ROOT/diggory" clean --dry-run
 	[ "$status" -eq 0 ]
@@ -382,7 +382,7 @@ EOF
 	[[ "$output" != *"Debug session log saved to"* ]]
 }
 
-@test "mo clean --debug logs system info" {
+@test "digg clean --debug logs system info" {
 	mkdir -p "$HOME/.config/diggory"
 	run env HOME="$HOME" TERM="xterm-256color" DIGGORY_TEST_MODE=1 MO_DEBUG=1 "$PROJECT_ROOT/diggory" clean --dry-run
 	[ "$status" -eq 0 ]
@@ -396,20 +396,20 @@ EOF
 	[ "$status" -eq 0 ]
 }
 
-@test "mo clean --help includes external volume option" {
+@test "digg clean --help includes external volume option" {
 	run env HOME="$HOME" "$PROJECT_ROOT/diggory" clean --help
 	[ "$status" -eq 0 ]
 	[[ "$output" == *"--external PATH"* ]] || return 1
 	[[ "$output" == *"already-uninstalled apps"* ]]
 }
 
-@test "mo uninstall --help directs leftover-only cleanup to clean" {
+@test "digg uninstall --help directs leftover-only cleanup to clean" {
 	run env HOME="$HOME" "$PROJECT_ROOT/diggory" uninstall --help
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"already gone, use mo clean"* ]]
+	[[ "$output" == *"already gone, use digg clean"* ]]
 }
 
-@test "mo clean --external accepts canonicalized custom root" {
+@test "digg clean --external accepts canonicalized custom root" {
 	real_root="$(mktemp -d "$HOME/ext-real.XXXXXX")"
 	link_root="$HOME/ext-link"
 	ln -s "$real_root" "$link_root"
@@ -557,7 +557,7 @@ EOF
 
 # --- JSON output mode tests ---
 
-@test "mo analyze --json outputs valid JSON with expected fields" {
+@test "digg analyze --json outputs valid JSON with expected fields" {
 	if [[ ! -x "${ANALYZE_BIN:-}" ]]; then
 		skip "analyze binary not available (go not installed?)"
 	fi
@@ -581,7 +581,7 @@ assert isinstance(data['entries'], list), 'entries is not a list'
 "
 }
 
-@test "mo analyze --json entries contain required fields" {
+@test "digg analyze --json entries contain required fields" {
 	if [[ ! -x "${ANALYZE_BIN:-}" ]]; then
 		skip "analyze binary not available (go not installed?)"
 	fi
@@ -601,7 +601,7 @@ for entry in data['entries']:
 "
 }
 
-@test "mo analyze --json path reflects target directory" {
+@test "digg analyze --json path reflects target directory" {
 	if [[ ! -x "${ANALYZE_BIN:-}" ]]; then
 		skip "analyze binary not available (go not installed?)"
 	fi
@@ -617,7 +617,7 @@ assert data['path'] == '/tmp' or data['path'] == '/private/tmp', \
 "
 }
 
-@test "mo status --json outputs valid JSON with expected fields" {
+@test "digg status --json outputs valid JSON with expected fields" {
 	if [[ ! -x "${STATUS_BIN:-}" ]]; then
 		skip "status binary not available (go not installed?)"
 	fi
@@ -637,7 +637,7 @@ for key in ['cpu', 'memory', 'disks', 'health_score', 'host', 'uptime']:
 "
 }
 
-@test "mo status --json cpu section has expected structure" {
+@test "digg status --json cpu section has expected structure" {
 	if [[ ! -x "${STATUS_BIN:-}" ]]; then
 		skip "status binary not available (go not installed?)"
 	fi
@@ -655,7 +655,7 @@ assert isinstance(cpu['usage'], (int, float)), 'cpu usage is not a number'
 "
 }
 
-@test "mo status --json memory section has expected structure" {
+@test "digg status --json memory section has expected structure" {
 	if [[ ! -x "${STATUS_BIN:-}" ]]; then
 		skip "status binary not available (go not installed?)"
 	fi
@@ -674,7 +674,7 @@ assert mem['total'] > 0, 'memory total should be positive'
 "
 }
 
-@test "mo status --json piped to stdout auto-detects JSON mode" {
+@test "digg status --json piped to stdout auto-detects JSON mode" {
 	if [[ ! -x "${STATUS_BIN:-}" ]]; then
 		skip "status binary not available (go not installed?)"
 	fi
@@ -684,7 +684,7 @@ assert mem['total'] > 0, 'memory total should be positive'
 	echo "$output" | python3 -c "import sys, json; json.load(sys.stdin)"
 }
 
-@test "mo status --watch streams newline-delimited JSON" {
+@test "digg status --watch streams newline-delimited JSON" {
 	if [[ ! -x "${STATUS_BIN:-}" ]]; then
 		skip "status binary not available (go not installed?)"
 	fi

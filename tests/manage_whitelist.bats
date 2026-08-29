@@ -241,36 +241,36 @@ EOF
     [[ "$output" == *"Chrome browser cache|\$HOME/Library/Caches/Google/Chrome/*|browser_cache"* ]] || return 1
 }
 
-@test "mo clean --whitelist persists selections" {
+@test "digg clean --whitelist persists selections" {
     whitelist_file="$HOME/.config/diggory/whitelist"
     mkdir -p "$(dirname "$whitelist_file")"
 
-    run /bin/bash --noprofile --norc -c "cd '$PROJECT_ROOT'; printf \$'\\n' | HOME='$HOME' ./mo clean --whitelist"
+    run /bin/bash --noprofile --norc -c "cd '$PROJECT_ROOT'; printf \$'\\n' | HOME='$HOME' ./digg clean --whitelist"
     [ "$status" -eq 0 ]
     first_pattern=$(grep -v '^[[:space:]]*#' "$whitelist_file" | grep -v '^[[:space:]]*$' | head -n 1)
     [ -n "$first_pattern" ]
 
-    run /bin/bash --noprofile --norc -c "cd '$PROJECT_ROOT'; printf \$' \\n' | HOME='$HOME' ./mo clean --whitelist"
+    run /bin/bash --noprofile --norc -c "cd '$PROJECT_ROOT'; printf \$' \\n' | HOME='$HOME' ./digg clean --whitelist"
     [ "$status" -eq 0 ]
     run grep -Fxq "$first_pattern" "$whitelist_file"
     [ "$status" -eq 1 ]
 
-    run /bin/bash --noprofile --norc -c "cd '$PROJECT_ROOT'; printf \$'\\n' | HOME='$HOME' ./mo clean --whitelist"
+    run /bin/bash --noprofile --norc -c "cd '$PROJECT_ROOT'; printf \$'\\n' | HOME='$HOME' ./digg clean --whitelist"
     [ "$status" -eq 0 ]
     run grep -Fxq "$first_pattern" "$whitelist_file"
     [ "$status" -eq 1 ]
 }
 
-@test "mo clean --whitelist cancel preserves existing file (#807)" {
+@test "digg clean --whitelist cancel preserves existing file (#807)" {
     whitelist_file="$HOME/.config/diggory/whitelist"
     mkdir -p "$(dirname "$whitelist_file")"
 
-    run /bin/bash --noprofile --norc -c "cd '$PROJECT_ROOT'; printf \$'\\n' | HOME='$HOME' ./mo clean --whitelist"
+    run /bin/bash --noprofile --norc -c "cd '$PROJECT_ROOT'; printf \$'\\n' | HOME='$HOME' ./digg clean --whitelist"
     [ "$status" -eq 0 ]
     [[ -f "$whitelist_file" ]] || return 1
     before_hash=$(shasum "$whitelist_file" | awk '{print $1}')
 
-    run /bin/bash --noprofile --norc -c "cd '$PROJECT_ROOT'; printf 'q' | HOME='$HOME' ./mo clean --whitelist"
+    run /bin/bash --noprofile --norc -c "cd '$PROJECT_ROOT'; printf 'q' | HOME='$HOME' ./digg clean --whitelist"
     [ "$status" -eq 0 ]
     [[ "$output" == *"Cancelled"* ]] || return 1
     after_hash=$(shasum "$whitelist_file" | awk '{print $1}')

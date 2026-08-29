@@ -36,9 +36,9 @@ prompt_enter() {
         echo "$prompt"
     fi
 }
-detect_mo() {
-    if command -v mo > /dev/null 2>&1; then
-        command -v mo
+detect_digg() {
+    if command -v digg > /dev/null 2>&1; then
+        command -v digg
     elif command -v diggory > /dev/null 2>&1; then
         command -v diggory
     else
@@ -306,7 +306,7 @@ create_alfred_workflow() {
     log_step "Installing Alfred workflows..."
     for entry in "${LAUNCHER_COMMAND_SPECS[@]}"; do
         IFS="|" read -r subcommand title _ subtitle <<< "$entry"
-        bundle="fun.tw93.diggory.${subcommand}"
+        bundle="oss.superstack.diggory.${subcommand}"
         keyword="${subcommand}"
         command="\"${mo_bin}\" ${subcommand}"
         local workflow_uid="user.workflow.$(uuid | LC_ALL=C tr '[:upper:]' '[:lower:]')"
@@ -412,7 +412,7 @@ main() {
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
     local mo_bin
-    mo_bin="$(detect_mo)"
+    mo_bin="$(detect_digg)"
     log_step "Detected Diggory binary at: ${mo_bin}"
 
     create_raycast_commands "$mo_bin"

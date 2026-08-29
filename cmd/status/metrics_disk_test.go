@@ -32,7 +32,7 @@ func TestShouldSkipDiskPartition(t *testing.T) {
 			name: "skip macfuse mirror mount",
 			part: disk.PartitionStat{
 				Device:     "kaku-local:/",
-				Mountpoint: "/Users/tw93/Library/Caches/dev.kaku/sshfs/kaku-local",
+				Mountpoint: "/Users/example/Library/Caches/dev.kaku/sshfs/kaku-local",
 				Fstype:     "macfuse",
 			},
 			want: true,

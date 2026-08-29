@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tw93/diggory/internal/units"
+	"github.com/superstack-oss/Diggory-CLI/internal/units"
 )
 
 // Left-aligned block elements filling 1/8 through 7/8 of a cell, indexed by

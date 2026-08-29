@@ -63,7 +63,7 @@ setup() {
 	run "$PROJECT_ROOT/bin/completion.sh" bash
 	[ "$status" -eq 0 ]
 	[[ "$output" == *"_diggory_completions"* ]] || return 1
-	[[ "$output" == *"complete -F _diggory_completions diggory mo"* ]]
+	[[ "$output" == *"complete -F _diggory_completions diggory digg"* ]]
 }
 
 @test "completion bash script includes all commands" {
@@ -80,10 +80,10 @@ setup() {
 	[[ "$output" == *"completion"* ]]
 }
 
-@test "completion bash script supports mo command" {
+@test "completion bash script supports digg command" {
 	run "$PROJECT_ROOT/bin/completion.sh" bash
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"complete -F _diggory_completions diggory mo"* ]]
+	[[ "$output" == *"complete -F _diggory_completions diggory digg"* ]]
 }
 
 @test "completion bash includes current clean, analyze, history, and purge options only" {
@@ -107,7 +107,7 @@ setup() {
 @test "completion zsh generates valid zsh script" {
 	run "$PROJECT_ROOT/bin/completion.sh" zsh
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"#compdef diggory mo"* ]] || return 1
+	[[ "$output" == *"#compdef diggory digg"* ]] || return 1
 	[[ "$output" == *"_diggory()"* ]]
 }
 
@@ -137,13 +137,13 @@ setup() {
 	run "$PROJECT_ROOT/bin/completion.sh" fish
 	[ "$status" -eq 0 ]
 	[[ "$output" == *"complete -f -c diggory"* ]] || return 1
-	[[ "$output" == *"complete -f -c mo"* ]]
+	[[ "$output" == *"complete -f -c digg"* ]]
 }
 
-@test "completion fish includes both diggory and mo commands" {
+@test "completion fish includes both diggory and digg commands" {
 	output="$("$PROJECT_ROOT/bin/completion.sh" fish)"
 	diggory_count=$(echo "$output" | grep -c "complete -f -c diggory")
-	mo_count=$(echo "$output" | grep -c "complete -f -c mo")
+	mo_count=$(echo "$output" | grep -c "complete -f -c digg")
 
 	[ "$diggory_count" -gt 0 ]
 	[ "$mo_count" -gt 0 ]

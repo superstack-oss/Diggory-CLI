@@ -1,5 +1,5 @@
 #!/bin/bash
-# Lightweight alias to run Diggory via `mo`
+# Lightweight alias to run Diggory via `digg`
 
 set -euo pipefail
 

@@ -41,8 +41,8 @@ clean_trash() {
 
     # Always count and delete directly. The previous Finder AppleScript path
     # triggered macOS's "Show warning before emptying the Trash" dialog and
-    # blocked mo clean on user confirmation. Volume Trashes
-    # (/Volumes/*/.Trashes/<uid>/) are not handled here; mo clean only manages
+    # blocked digg clean on user confirmation. Volume Trashes
+    # (/Volumes/*/.Trashes/<uid>/) are not handled here; digg clean only manages
     # the user's home Trash.
     local trash_count
     trash_count=$(command find "$HOME/.Trash" -mindepth 1 -maxdepth 1 -print0 2> /dev/null |

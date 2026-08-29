@@ -541,7 +541,7 @@ DIGGORY_ASSUME_SUDO_AUTH=1
 
 mkdir -p "$CONFIG_DIR" "$SOURCE_DIR"
 printf '#!/bin/bash\nVERSION="9.9.9"\n' > "$SOURCE_DIR/diggory"
-printf '#!/bin/bash\n' > "$SOURCE_DIR/mo"
+printf '#!/bin/bash\n' > "$SOURCE_DIR/digg"
 # Non-writable install dir: needs_sudo must answer true for a plain user.
 mkdir -m 555 "$INSTALL_DIR"
 
@@ -560,7 +560,7 @@ EOF
 
 	[ "$status" -eq 0 ] || return 1
 	[[ "$output" == *"HANDLED_FAILURE"* ]] || return 1
-	[[ "$output" == *"sudo -v && mo update"* ]] || return 1
+	[[ "$output" == *"sudo -v && digg update"* ]] || return 1
 	[[ "$output" != *"SUCCESS:Installed diggory"* ]] || return 1
 	[[ "$output" != *"DOWNLOAD_CALLED"* ]] || return 1
 }
@@ -1027,10 +1027,10 @@ set -euo pipefail
 eval "$(sed -n '/^source_archive_url()/,/^}/p' "$PROJECT_ROOT/install.sh")"
 
 commit="0123456789abcdef0123456789abcdef01234567"
-[[ "$(source_archive_url main "$commit")" == "https://github.com/tw93/diggory/archive/$commit.tar.gz" ]] || exit 1
-[[ "$(source_archive_url main "")" == "https://github.com/tw93/diggory/archive/refs/heads/main.tar.gz" ]] || exit 1
-[[ "$(source_archive_url dev "")" == "https://github.com/tw93/diggory/archive/refs/heads/dev.tar.gz" ]] || exit 1
-[[ "$(source_archive_url V1.2.3 "")" == "https://github.com/tw93/diggory/archive/refs/tags/V1.2.3.tar.gz" ]] || exit 1
+[[ "$(source_archive_url main "$commit")" == "https://github.com/superstack-oss/Diggory-CLI/archive/$commit.tar.gz" ]] || exit 1
+[[ "$(source_archive_url main "")" == "https://github.com/superstack-oss/Diggory-CLI/archive/refs/heads/main.tar.gz" ]] || exit 1
+[[ "$(source_archive_url dev "")" == "https://github.com/superstack-oss/Diggory-CLI/archive/refs/heads/dev.tar.gz" ]] || exit 1
+[[ "$(source_archive_url V1.2.3 "")" == "https://github.com/superstack-oss/Diggory-CLI/archive/refs/tags/V1.2.3.tar.gz" ]] || exit 1
 EOF
 
 	[ "$status" -eq 0 ] || {

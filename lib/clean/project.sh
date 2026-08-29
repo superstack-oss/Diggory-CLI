@@ -1,5 +1,5 @@
 #!/bin/bash
-# Project Purge Module (mo purge).
+# Project Purge Module (digg purge).
 # Removes heavy project build artifacts and dependencies.
 set -euo pipefail
 
@@ -131,7 +131,7 @@ EOF
     fi
 
     # Guard empty-array expansion under `set -u` on bash 3.2 (first-run case
-    # from `mo purge --paths` passes only the header with no paths).
+    # from `digg purge --paths` passes only the header with no paths).
     if [[ ${#paths[@]} -gt 0 ]]; then
         for path in "${paths[@]}"; do
             # Convert $HOME to ~ for portability
@@ -161,7 +161,7 @@ warn_purge_config_write_failure() {
 save_discovered_paths() {
     local -a paths=("$@")
     write_purge_config "# Diggory Purge Paths - Auto-discovered project directories
-# Edit this file to customize, or run: mo purge --paths
+# Edit this file to customize, or run: digg purge --paths
 # Add one path per line (supports ~ for home directory)
 " "${paths[@]}"
 }
@@ -1096,7 +1096,7 @@ confirm_purge_cleanup() {
     if [[ $cloud_count -gt 0 ]]; then
         echo ""
         echo -e "${YELLOW}${ICON_WARNING}${NC} Cloud-synced artifacts may also be removed from other devices."
-        echo -e "${GRAY}Use 'mo purge --paths' to exclude cloud storage roots.${NC}"
+        echo -e "${GRAY}Use 'digg purge --paths' to exclude cloud storage roots.${NC}"
     fi
 
     echo -ne "${PURPLE}${ICON_ARROW}${NC} Remove ${item_count} ${item_text}, ${size_display}${unknown_hint}  ${GREEN}Enter${NC} confirm, ${GRAY}ESC${NC} cancel: "
@@ -1604,7 +1604,7 @@ clean_project_artifacts() {
         elif [[ $_age_d -lt 30 ]]; then
             item_age_labels+=("${_age_d}d")
         elif [[ $_age_d -lt 365 ]]; then
-            item_age_labels+=("$((_age_d / 30))mo")
+            item_age_labels+=("$((_age_d / 30))digg")
         else
             item_age_labels+=("$((_age_d / 365))y")
         fi

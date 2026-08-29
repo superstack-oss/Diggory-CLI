@@ -79,30 +79,30 @@ remove_diggory() {
         fi
     done
 
-    local found_mo
-    found_mo=""
+    local found_digg
+    found_digg=""
     if [[ "$test_mode" != "true" ]]; then
-        found_mo=$(command -v mo 2> /dev/null || true)
-        if [[ -n "$found_mo" && -f "$found_mo" ]]; then
-            if [[ ! -L "$found_mo" ]] || ! readlink "$found_mo" | grep -q "Cellar/diggory"; then
-                alias_installs+=("$found_mo")
+        found_digg=$(command -v digg 2> /dev/null || true)
+        if [[ -n "$found_digg" && -f "$found_digg" ]]; then
+            if [[ ! -L "$found_digg" ]] || ! readlink "$found_digg" | grep -q "Cellar/diggory"; then
+                alias_installs+=("$found_digg")
             fi
         fi
     fi
 
     local -a alias_fallback=()
     if [[ "$test_mode" == "true" ]]; then
-        alias_fallback=("$HOME/.local/bin/mo")
+        alias_fallback=("$HOME/.local/bin/digg")
     else
         alias_fallback=(
-            "/usr/local/bin/mo"
-            "$HOME/.local/bin/mo"
-            "/opt/local/bin/mo"
+            "/usr/local/bin/digg"
+            "$HOME/.local/bin/digg"
+            "/opt/local/bin/digg"
         )
     fi
 
     for alias in "${alias_fallback[@]}"; do
-        if [[ -f "$alias" && "$alias" != "$found_mo" ]]; then
+        if [[ -f "$alias" && "$alias" != "$found_digg" ]]; then
             if [[ ! -L "$alias" ]] || ! readlink "$alias" | grep -q "Cellar/diggory"; then
                 alias_installs+=("$alias")
             fi

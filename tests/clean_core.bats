@@ -650,12 +650,12 @@ EOF
     [[ "$output" == *"RC=130 CANCEL=130 REMOVAL=0"* ]] || return 1
 }
 
-@test "mo clean --dry-run skips system cleanup in non-interactive mode" {
+@test "digg clean --dry-run skips system cleanup in non-interactive mode" {
     set_mock_sudo_uncached
     run_clean_dry_run
     [ "$status" -eq 0 ]
     [[ "$output" == *"Dry Run Mode"* ]] || return 1
-    [[ "$output" == *"sudo -v && mo clean --dry-run"* ]]
+    [[ "$output" == *"sudo -v && digg clean --dry-run"* ]]
     [[ "$output" != *"system preview included"* ]]
 }
 
@@ -671,7 +671,7 @@ EOF
     [[ -f "$HOME/.Trash/env-dry-run-sentinel" ]]
 }
 
-@test "mo clean --dry-run does not probe sudo in test mode" {
+@test "digg clean --dry-run does not probe sudo in test mode" {
     set_mock_sudo_cached
     cat > "$TEST_MOCK_BIN/sudo" << 'MOCK'
 #!/bin/bash
@@ -682,21 +682,21 @@ MOCK
 
     run_clean_dry_run
     [ "$status" -eq 0 ]
-    [[ "$output" == *"sudo -v && mo clean --dry-run"* ]]
+    [[ "$output" == *"sudo -v && digg clean --dry-run"* ]]
     [[ "$output" != *"sudo should not be called"* ]]
 }
 
-@test "mo clean rejects removed cleanup selection flags" {
+@test "digg clean rejects removed cleanup selection flags" {
     local removed_flag
     for removed_flag in "--select" "--categories" "--exclude"; do
         run env HOME="$HOME" DIGGORY_TEST_MODE=1 "$PROJECT_ROOT/diggory" clean "$removed_flag"
         [ "$status" -eq 1 ]
         [[ "$output" == *"was removed in this release"* ]] || return 1
-        [[ "$output" == *"mo clean --dry-run"* ]] || return 1
+        [[ "$output" == *"digg clean --dry-run"* ]] || return 1
     done
 }
 
-@test "mo clean --dry-run shows hint when sudo is not cached" {
+@test "digg clean --dry-run shows hint when sudo is not cached" {
     set_mock_sudo_uncached
     run_clean_dry_run
     [ "$status" -eq 0 ]
@@ -704,7 +704,7 @@ MOCK
     [[ "$output" == *"full preview"* ]]
 }
 
-@test "mo clean adopts cached sudo before system cleanup (#1084)" {
+@test "digg clean adopts cached sudo before system cleanup (#1084)" {
     run env HOME="$HOME" PROJECT_ROOT="$PROJECT_ROOT" DIGGORY_TEST_MODE=0 DIGGORY_TEST_NO_AUTH=0 /bin/bash --noprofile --norc << 'SCRIPT'
 set -euo pipefail
 TRACE="$HOME/sudo-adopt.log"
@@ -759,7 +759,7 @@ SCRIPT
     [[ "$output" == *"SHOW"* ]]
 }
 
-@test "mo clean sudo prompt preserves a directly typed password (#1059)" {
+@test "digg clean sudo prompt preserves a directly typed password (#1059)" {
     run env HOME="$HOME" PROJECT_ROOT="$PROJECT_ROOT" \
         /bin/bash --noprofile --norc << 'SCRIPT'
 set -euo pipefail
@@ -796,7 +796,7 @@ SCRIPT
     [[ "$output" != *"Skipped"* ]]
 }
 
-@test "mo clean sudo prompt still skips on explicit Space (#1059)" {
+@test "digg clean sudo prompt still skips on explicit Space (#1059)" {
     run env HOME="$HOME" PROJECT_ROOT="$PROJECT_ROOT" \
         /bin/bash --noprofile --norc << 'SCRIPT'
 set -euo pipefail
@@ -829,7 +829,7 @@ SCRIPT
     [ "$status" -eq 0 ]
 }
 
-@test "mo clean summary separates tracked cleanup from free space change" {
+@test "digg clean summary separates tracked cleanup from free space change" {
     local mock_bin="$HOME/bin"
     mkdir -p "$mock_bin"
     cat > "$mock_bin/df" << 'MOCK'
@@ -903,7 +903,7 @@ EOF
     [ "$(cat "$HOME/df.count")" = "2" ]
 }
 
-@test "mo clean --dry-run survives an unwritable TMPDIR" {
+@test "digg clean --dry-run survives an unwritable TMPDIR" {
     local blocked_tmp="$HOME/blocked-tmp"
     mkdir -p "$blocked_tmp"
     chmod 500 "$blocked_tmp"
@@ -923,7 +923,7 @@ EOF
     [ -d "$HOME/.cache/diggory/tmp" ]
 }
 
-@test "mo clean --dry-run reports user cache without deleting it" {
+@test "digg clean --dry-run reports user cache without deleting it" {
     mkdir -p "$HOME/Library/Caches/TestApp"
     echo "cache data" > "$HOME/Library/Caches/TestApp/cache.tmp"
 
@@ -934,7 +934,7 @@ EOF
     [ -f "$HOME/Library/Caches/TestApp/cache.tmp" ]
 }
 
-@test "mo clean --dry-run reports stale login item without deleting it" {
+@test "digg clean --dry-run reports stale login item without deleting it" {
     mkdir -p "$HOME/Library/LaunchAgents"
     cat > "$HOME/Library/LaunchAgents/com.example.stale.plist" << 'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -963,7 +963,7 @@ PLIST
     [ -f "$HOME/Library/LaunchAgents/com.example.stale.plist" ]
 }
 
-@test "mo clean --dry-run does not export duplicate targets across sections" {
+@test "digg clean --dry-run does not export duplicate targets across sections" {
     mkdir -p "$HOME/Library/Application Support/Code/CachedData"
     echo "cache" > "$HOME/Library/Application Support/Code/CachedData/data.bin"
 
@@ -977,7 +977,7 @@ PLIST
     [ "$output" -eq 1 ]
 }
 
-@test "mo clean --dry-run keeps container totals and preview paths consistent (#1282)" {
+@test "digg clean --dry-run keeps container totals and preview paths consistent (#1282)" {
     # This assertion depends on an exact total. Give it a private HOME so
     # hidden directories left by earlier cases cannot add cleanup candidates.
     local test_home
@@ -1052,7 +1052,7 @@ EOF
     [[ "$output" == *"cache.bin  # size unknown"* ]] || return 1
 }
 
-@test "mo clean --dry-run never previews a live SQLite database family (#1390)" {
+@test "digg clean --dry-run never previews a live SQLite database family (#1390)" {
     local test_home
     test_home="$(mktemp -d "${BATS_TEST_TMPDIR}/clean-1390-home.XXXXXX")"
     mkdir -p "$test_home/.config/diggory" \
@@ -1076,7 +1076,7 @@ EOF
     [[ -f "$db" && -f "$db-wal" && -f "$db-shm" ]] || return 1
 }
 
-@test "mo clean honors whitelist entries" {
+@test "digg clean honors whitelist entries" {
     mkdir -p "$HOME/Library/Caches/WhitelistedApp"
     echo "keep me" > "$HOME/Library/Caches/WhitelistedApp/data.tmp"
 
@@ -1090,7 +1090,7 @@ EOF
     [ -f "$HOME/Library/Caches/WhitelistedApp/data.tmp" ]
 }
 
-@test "mo clean honors whitelist entries with $HOME literal" {
+@test "digg clean honors whitelist entries with $HOME literal" {
     mkdir -p "$HOME/Library/Caches/WhitelistedApp"
     echo "keep me" > "$HOME/Library/Caches/WhitelistedApp/data.tmp"
 
@@ -1104,7 +1104,7 @@ EOF
     [ -f "$HOME/Library/Caches/WhitelistedApp/data.tmp" ]
 }
 
-@test "mo clean protects Maven repository by default" {
+@test "digg clean protects Maven repository by default" {
     mkdir -p "$HOME/.m2/repository/org/example"
     echo "dependency" > "$HOME/.m2/repository/org/example/lib.jar"
 

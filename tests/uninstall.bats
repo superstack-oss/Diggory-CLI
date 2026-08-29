@@ -2548,7 +2548,7 @@ EOF
 @test "remove_diggory deletes manual binaries and caches" {
     mkdir -p "$HOME/.local/bin"
     touch "$HOME/.local/bin/diggory"
-    touch "$HOME/.local/bin/mo"
+    touch "$HOME/.local/bin/digg"
     mkdir -p "$HOME/.config/diggory" "$HOME/.cache/diggory" "$HOME/Library/Logs/diggory"
     echo "protected-entry" > "$HOME/.config/diggory/whitelist"
 
@@ -2589,7 +2589,7 @@ EOF
 
     [ "$status" -eq 0 ]
     [ ! -f "$HOME/.local/bin/diggory" ] || return 1
-    [ ! -f "$HOME/.local/bin/mo" ] || return 1
+    [ ! -f "$HOME/.local/bin/digg" ] || return 1
     [ ! -d "$HOME/.config/diggory" ] || return 1
     [ ! -d "$HOME/.cache/diggory" ] || return 1
     [ ! -d "$HOME/Library/Logs/diggory" ] || return 1
@@ -2600,7 +2600,7 @@ EOF
 @test "remove_diggory dry-run keeps manual binaries and caches" {
     mkdir -p "$HOME/.local/bin"
     touch "$HOME/.local/bin/diggory"
-    touch "$HOME/.local/bin/mo"
+    touch "$HOME/.local/bin/digg"
     mkdir -p "$HOME/.config/diggory" "$HOME/.cache/diggory" "$HOME/Library/Logs/diggory"
 
     run env HOME="$HOME" PROJECT_ROOT="$PROJECT_ROOT" PATH="/usr/bin:/bin" DIGGORY_TEST_MODE=1 /bin/bash --noprofile --norc << 'EOF'
@@ -2614,7 +2614,7 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"DRY RUN MODE"* ]] || return 1
     [ -f "$HOME/.local/bin/diggory" ]
-    [ -f "$HOME/.local/bin/mo" ]
+    [ -f "$HOME/.local/bin/digg" ]
     [ -d "$HOME/.config/diggory" ]
     [ -d "$HOME/.cache/diggory" ]
     [ -d "$HOME/Library/Logs/diggory" ]
@@ -2623,11 +2623,11 @@ EOF
 @test "remove_diggory test mode ignores PATH installs outside test HOME" {
     mkdir -p "$HOME/.local/bin" "$HOME/.config/diggory" "$HOME/.cache/diggory" "$HOME/Library/Logs/diggory"
     touch "$HOME/.local/bin/diggory"
-    touch "$HOME/.local/bin/mo"
+    touch "$HOME/.local/bin/digg"
 
     fake_global_bin="$(mktemp -d "${BATS_TEST_DIRNAME}/tmp-remove-path.XXXXXX")"
     touch "$fake_global_bin/diggory"
-    touch "$fake_global_bin/mo"
+    touch "$fake_global_bin/digg"
     cat > "$fake_global_bin/brew" << 'EOF'
 #!/bin/bash
 exit 0
@@ -2646,9 +2646,9 @@ EOF
 
     [ "$status" -eq 0 ]
     [[ "$output" == *"$HOME/.local/bin/diggory"* ]] || return 1
-    [[ "$output" == *"$HOME/.local/bin/mo"* ]] || return 1
+    [[ "$output" == *"$HOME/.local/bin/digg"* ]] || return 1
     [[ "$output" != *"$fake_global_bin/diggory"* ]] || return 1
-    [[ "$output" != *"$fake_global_bin/mo"* ]] || return 1
+    [[ "$output" != *"$fake_global_bin/digg"* ]] || return 1
     [[ "$output" != *"brew uninstall --force diggory"* ]]
 }
 @test "match_apps_by_name finds exact match case-insensitively" {
@@ -3843,7 +3843,7 @@ EOF
 }
 
 @test "match_apps_by_name joins multi-word args into one exact app name (#1365)" {
-    # `mo uninstall Tor Browser` arrives as two words; "Tor" alone
+    # `digg uninstall Tor Browser` arrives as two words; "Tor" alone
     # substring-matched WebSTORm. The joined words exactly name an
     # installed app, so that must be the single match.
     run env HOME="$HOME" PROJECT_ROOT="$PROJECT_ROOT" /bin/bash --noprofile --norc << 'EOF'

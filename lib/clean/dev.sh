@@ -2388,7 +2388,7 @@ clean_dev_mobile() {
     safe_clean ~/.expo/versions-cache/* "Expo versions cache"
 }
 # JVM ecosystem caches.
-# Gradle: Respects whitelist, cleaned when not protected via: mo clean --whitelist
+# Gradle: Respects whitelist, cleaned when not protected via: digg clean --whitelist
 clean_dev_jvm() {
     # Source Maven cleanup module (requires bash for BASH_SOURCE)
     # shellcheck disable=SC1091

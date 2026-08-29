@@ -112,31 +112,15 @@ EOF
     [ -x "$PROJECT_ROOT/scripts/check_release_minos.sh" ]
 }
 
-@test "release workflow keeps the Homebrew Core PR open (#1209)" {
+@test "release workflow does not bump a third-party Homebrew Core fork" {
     local workflow="$PROJECT_ROOT/.github/workflows/release.yml"
 
-    run grep -F "Have you followed the [guidelines for contributing]" "$workflow"
-    [ "$status" -eq 0 ]
-    run grep -F "pulls?state=all&head=tw93:" "$workflow"
-    [ "$status" -eq 0 ]
-    run grep -F 'PR_STATE" != "open"' "$workflow"
-    [ "$status" -eq 0 ]
-    run grep -F 'core_status=published' "$workflow"
-    [ "$status" -eq 0 ]
-    run grep -F 'core_status=pr-open' "$workflow"
-    [ "$status" -eq 0 ]
-
-    run awk '
-        /name: Update Homebrew formula \(Official Core\)/ { in_step = 1 }
-        in_step && /continue-on-error:/ { found = 1 }
-        in_step && /name: Verify formula updates/ { exit found ? 1 : 0 }
-        END { if (!in_step) exit 1 }
-    ' "$workflow"
-    [ "$status" -eq 0 ]
+    run grep -E 'update-homebrew-core:|tw93/homebrew-core|head=tw93:' "$workflow"
+    [ "$status" -ne 0 ]
 }
 
-@test "setup-quick-launchers.sh has detect_mo function" {
-    run /bin/bash -c "grep -q 'detect_mo()' '$PROJECT_ROOT/scripts/setup-quick-launchers.sh'"
+@test "setup-quick-launchers.sh has detect_digg function" {
+    run /bin/bash -c "grep -q 'detect_digg()' '$PROJECT_ROOT/scripts/setup-quick-launchers.sh'"
     [ "$status" -eq 0 ]
 }
 
@@ -150,11 +134,11 @@ EOF
 @test "setup-quick-launchers.sh generates Raycast scripts with discoverable metadata" {
     local fake_bin="$HOME/fake-bin"
     mkdir -p "$fake_bin"
-    cat > "$fake_bin/mo" <<'EOF'
+    cat > "$fake_bin/digg" <<'EOF'
 #!/bin/bash
 exit 0
 EOF
-    chmod +x "$fake_bin/mo"
+    chmod +x "$fake_bin/digg"
 
     run env HOME="$HOME" TERM="dumb" PATH="$fake_bin:/usr/bin:/bin:/usr/sbin:/sbin" \
         "$PROJECT_ROOT/scripts/setup-quick-launchers.sh"
@@ -204,26 +188,18 @@ EOF
     run env PROJECT_ROOT="$PROJECT_ROOT" /bin/bash --noprofile --norc <<'EOF'
 set -euo pipefail
 eval "$(sed -n '/^source_archive_url()/,/^}/p' "$PROJECT_ROOT/install.sh")"
-[[ "$(source_archive_url dev "")" == "https://github.com/tw93/diggory/archive/refs/heads/dev.tar.gz" ]]
+[[ "$(source_archive_url dev "")" == "https://github.com/superstack-oss/Diggory-CLI/archive/refs/heads/dev.tar.gz" ]]
 EOF
     [ "$status" -eq 0 ] || { echo "$output"; return 1; }
     run /bin/bash -c "grep -q 'DIGGORY_VERSION=\"dev\"' '$PROJECT_ROOT/install.sh'"
     [ "$status" -eq 0 ]
 }
 
-@test "release workflow keeps Homebrew distribution on official core only" {
-    run grep -q 'update-homebrew-core:' "$PROJECT_ROOT/.github/workflows/release.yml"
-    [ "$status" -eq 0 ]
-
-    run grep -Eq 'update-personal-tap:|tw93/homebrew-tap|PAT_TOKEN' "$PROJECT_ROOT/.github/workflows/release.yml"
+@test "release workflow does not publish Homebrew from this repo yet" {
+    run grep -Eq 'update-homebrew-core:|update-personal-tap:|tw93/homebrew-tap|PAT_TOKEN' "$PROJECT_ROOT/.github/workflows/release.yml"
     [ "$status" -ne 0 ]
 
     [ ! -e "$PROJECT_ROOT/scripts/update_homebrew_tap_formula.sh" ]
-
-    run grep -Eq 'Homebrew tap|personal tap' "$PROJECT_ROOT/.claude/skills/release-notes/SKILL.md"
-    [ "$status" -ne 0 ]
-    run grep -q 'Homebrew Core PR is workflow-driven' "$PROJECT_ROOT/.claude/skills/release-notes/SKILL.md"
-    [ "$status" -eq 0 ]
 }
 
 @test "no shell function shares another's body under a different name" {

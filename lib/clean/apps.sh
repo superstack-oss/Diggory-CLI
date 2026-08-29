@@ -1710,7 +1710,7 @@ clean_orphaned_system_services() {
 
 }
 
-# Policy: mo clean does NOT touch user LaunchAgents (~/Library/LaunchAgents),
+# Policy: digg clean does NOT touch user LaunchAgents (~/Library/LaunchAgents),
 # they are user-owned automation and not generic cleanup targets.
 
 # ============================================================================

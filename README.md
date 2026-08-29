@@ -4,19 +4,11 @@
 </div>
 
 <p align="center">
-  <a href="https://github.com/tw93/diggory/stargazers"><img src="https://img.shields.io/github/stars/tw93/diggory?style=flat-square" alt="Stars"></a>
-  <a href="https://github.com/tw93/diggory/releases"><img src="https://img.shields.io/github/v/tag/tw93/diggory?label=version&style=flat-square" alt="Version"></a>
+  <a href="https://github.com/superstack-oss/Diggory-CLI/stargazers"><img src="https://img.shields.io/github/stars/superstack-oss/Diggory-CLI?style=flat-square" alt="Stars"></a>
+  <a href="https://github.com/superstack-oss/Diggory-CLI/releases"><img src="https://img.shields.io/github/v/tag/superstack-oss/Diggory-CLI?label=version&style=flat-square" alt="Version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL_v3-blue.svg?style=flat-square" alt="License"></a>
-  <a href="https://github.com/tw93/diggory/commits"><img src="https://img.shields.io/github/commit-activity/m/tw93/diggory?style=flat-square" alt="Commits"></a>
-  <a href="https://twitter.com/HiTw93"><img src="https://img.shields.io/badge/follow-Tw93-red?style=flat-square&logo=Twitter" alt="Twitter"></a>
-  <a href="https://t.me/+9f9gf4ZrFSQ2OWVl"><img src="https://img.shields.io/badge/chat-Telegram-blueviolet?style=flat-square&logo=Telegram" alt="Telegram"></a>
+  <a href="https://github.com/superstack-oss/Diggory-CLI/commits"><img src="https://img.shields.io/github/commit-activity/m/superstack-oss/Diggory-CLI?style=flat-square" alt="Commits"></a>
 </p>
-
-<p align="center">
-  <img src="https://gw.alipayobjects.com/zos/k/ro/ZzF8e8.png" alt="Diggory - 95.50GB freed" width="1000" />
-</p>
-
-> 💡 The CLI is free and open source. Prefer a native Mac app? [Diggory for Mac](https://diggory.fit) adds visual cleanup review, app updates, uninstall, maintenance, disk maps, live status, and a menu bar HUD. One license covers 2 Macs, with lifetime updates and a 14-day refund.
 
 ## Features
 
@@ -28,63 +20,63 @@
 
 ## Quick Start
 
-**Install via Homebrew**
+**Install via Homebrew tap**
 
 ```bash
-brew install diggory
+brew install superstack-oss/tap/diggory
 ```
 
-Homebrew follows Homebrew's supported macOS tiers. Use macOS 14 or later for the Homebrew path; older macOS versions should use the script installer below on a best-effort basis.
+This installs the `diggory` command and the `digg` alias. Homebrew Core (`brew install diggory` with no tap) is not available yet.
 
 **Or via script**
 
 ```bash
-# Optional args: -s latest for main branch code, -s 1.17.0 for specific version
-curl -fsSL https://raw.githubusercontent.com/tw93/diggory/main/install.sh | bash
+# Optional args: -s latest for main branch code, -s 1.0.0 for a specific version
+curl -fsSL https://raw.githubusercontent.com/superstack-oss/Diggory-CLI/main/install.sh | bash
 ```
 
-> Note: Diggory is built for macOS. An experimental Windows version is available in the [windows branch](https://github.com/tw93/Diggory/tree/windows) for early adopters.
+> Note: Diggory is built for macOS.
 
 **Run**
 
 ```bash
-mo                           # Interactive menu
-mo clean                     # Deep cleanup + already-uninstalled app leftovers
-mo uninstall                 # Remove installed apps + their leftovers
-mo optimize                  # Refresh caches & services
-mo analyze                   # Visual disk explorer (or 'mo analyse')
-mo status                    # Live system health dashboard
-mo purge                     # Clean project build artifacts
-mo installer                 # Find and remove installer files
+digg                           # Interactive menu
+digg clean                     # Deep cleanup + already-uninstalled app leftovers
+digg uninstall                 # Remove installed apps + their leftovers
+digg optimize                  # Refresh caches & services
+digg analyze                   # Visual disk explorer (or 'digg analyse')
+digg status                    # Live system health dashboard
+digg purge                     # Clean project build artifacts
+digg installer                 # Find and remove installer files
 
-mo touchid                   # Configure Touch ID for sudo
-mo completion                # Set up shell tab completion
-mo update                    # Update Diggory
-mo update --nightly          # Update to latest unreleased main build, script install only
-mo remove                    # Remove Diggory from system
-mo --help                    # Show help
-mo --version                 # Show installed version
+digg touchid                   # Configure Touch ID for sudo
+digg completion                # Set up shell tab completion
+digg update                    # Update Diggory
+digg update --nightly          # Update to latest unreleased main build, script install only
+digg remove                    # Remove Diggory from system
+digg --help                    # Show help
+digg --version                 # Show installed version
 ```
 
 **Preview safely**
 
 ```bash
-mo clean --dry-run
-mo uninstall --dry-run
-mo history
-mo history --json
-mo purge --dry-run
+digg clean --dry-run
+digg uninstall --dry-run
+digg history
+digg history --json
+digg purge --dry-run
 
 # Also works with: optimize, installer, remove, completion, touchid enable
-mo clean --dry-run --debug   # Preview + detailed logs
-mo optimize --whitelist      # Manage protected optimization rules
-mo clean --whitelist         # Manage protected caches
-mo purge --paths             # Configure project scan directories
-mo analyze /Volumes          # Analyze external drives only
-mo analyze /private/tmp      # Review user-owned temporary directories
+digg clean --dry-run --debug   # Preview + detailed logs
+digg optimize --whitelist      # Manage protected optimization rules
+digg clean --whitelist         # Manage protected caches
+digg purge --paths             # Configure project scan directories
+digg analyze /Volumes          # Analyze external drives only
+digg analyze /private/tmp      # Review user-owned temporary directories
 ```
 
-Selections made with `mo clean --whitelist` persist in `~/.config/diggory/whitelist`.
+Selections made with `digg clean --whitelist` persist in `~/.config/diggory/whitelist`.
 
 ## Security & Safety Design
 
@@ -92,15 +84,15 @@ Diggory is a local system maintenance tool, and some commands can perform destru
 
 Diggory uses safety-first defaults: path validation, protected-directory rules, conservative cleanup boundaries, and explicit confirmation for higher-risk actions. When risk or uncertainty is high, Diggory skips, refuses, or requires stronger confirmation rather than broadening deletion scope.
 
-`mo analyze` is safer for ad hoc cleanup because it moves files to Trash through Finder instead of deleting them directly.
+`digg analyze` is safer for ad hoc cleanup because it moves files to Trash through Finder instead of deleting them directly.
 
 Review [SECURITY.md](SECURITY.md) and [SECURITY_AUDIT.md](SECURITY_AUDIT.md) for reporting guidance, safety boundaries, and current limitations.
 
 ## Tips
 
 - Video tutorial: Watch the [Diggory tutorial video](https://www.youtube.com/watch?v=UEe9-w4CcQ0), thanks to PAPAYA 電腦教室.
-- Safety and logs: `clean`, `uninstall`, `purge`, `installer`, and `remove` are destructive. Review with `--dry-run` first, and add `--debug` when needed. File operations are logged to `~/Library/Logs/diggory/operations.log` and can be reviewed with `mo history`. Disable with `MO_NO_OPLOG=1`. Review [SECURITY.md](SECURITY.md) and [SECURITY_AUDIT.md](SECURITY_AUDIT.md).
-- App leftovers: use `mo clean` when the app is already uninstalled, and `mo uninstall` when the app is still installed.
+- Safety and logs: `clean`, `uninstall`, `purge`, `installer`, and `remove` are destructive. Review with `--dry-run` first, and add `--debug` when needed. File operations are logged to `~/Library/Logs/diggory/operations.log` and can be reviewed with `digg history`. Disable with `MO_NO_OPLOG=1`. Review [SECURITY.md](SECURITY.md) and [SECURITY_AUDIT.md](SECURITY_AUDIT.md).
+- App leftovers: use `digg clean` when the app is already uninstalled, and `digg uninstall` when the app is still installed.
 - Navigation: Diggory supports arrow keys and Vim bindings `h/j/k/l`.
 
 ## Features in Detail
@@ -108,7 +100,7 @@ Review [SECURITY.md](SECURITY.md) and [SECURITY_AUDIT.md](SECURITY_AUDIT.md) for
 ### Deep System Cleanup
 
 ```bash
-$ mo clean
+$ digg clean
 
 Scanning cache directories...
 
@@ -124,12 +116,12 @@ Space freed: 95.5GB | Free space now: 223.5GB
 ====================================================================
 ```
 
-Note: In `mo clean` -> Developer tools, Diggory removes unused CoreSimulator `Volumes/Cryptex` entries and skips `IN_USE` items.
+Note: In `digg clean` -> Developer tools, Diggory removes unused CoreSimulator `Volumes/Cryptex` entries and skips `IN_USE` items.
 
 ### Smart App Uninstaller
 
 ```bash
-$ mo uninstall
+$ digg uninstall
 
 Select Apps to Remove
 ═══════════════════════════
@@ -153,7 +145,7 @@ Space freed: 12.8GB
 ### System Optimization
 
 ```bash
-$ mo optimize
+$ digg optimize
 
 System: 5/32 GB RAM | 333/460 GB Disk (72%) | Uptime 6d
 
@@ -169,18 +161,18 @@ Applied 8 optimizations
 Optimization pass complete
 ```
 
-Use `mo optimize --whitelist` to exclude specific optimizations. Path patterns work too, so you can keep a long-lived mounted disk image around (for example `/Volumes/mail`) without it showing up as a detach candidate.
+Use `digg optimize --whitelist` to exclude specific optimizations. Path patterns work too, so you can keep a long-lived mounted disk image around (for example `/Volumes/mail`) without it showing up as a detach candidate.
 
 Optimize results depend on the Mac's current state and available system tools, so the counts above are illustrative rather than fixed.
 
 ### Disk Space Analyzer
 
-> Note: By default, Diggory skips external drives under `/Volumes` for faster startup. To inspect them, run `mo analyze /Volumes` or a specific mount path.
+> Note: By default, Diggory skips external drives under `/Volumes` for faster startup. To inspect them, run `digg analyze /Volumes` or a specific mount path.
 
-Developer tools may leave large temporary directories under `/private/tmp`. Review user-owned entries with `mo analyze /private/tmp`; selected entries move to Trash only after confirmation. Diggory does not automatically delete third-party temporary directories because build markers and age alone cannot prove that a checkout or worktree is disposable.
+Developer tools may leave large temporary directories under `/private/tmp`. Review user-owned entries with `digg analyze /private/tmp`; selected entries move to Trash only after confirmation. Diggory does not automatically delete third-party temporary directories because build markers and age alone cannot prove that a checkout or worktree is disposable.
 
 ```bash
-$ mo analyze
+$ digg analyze
 
 Analyze Disk  (302.1GB free)
 Select a location to explore:
@@ -199,7 +191,7 @@ Select a location to explore:
 Real-time dashboard with health score, hardware info, and performance metrics.
 
 ```bash
-$ mo status
+$ digg status
 
 Diggory Status  Health ● 92  MacBook Pro · M4 Pro · 32GB · macOS 14.5
 
@@ -223,19 +215,19 @@ Proxy   HTTP · 192.168.1.100             Terminal   ▮▯▯▯▯  12.5%
 
 Health score is based on CPU, memory, disk, temperature, and I/O load, with color-coded ranges.
 
-Shortcuts: In `mo status`, press `k` to toggle the cat, `c` to cycle how many CPU cores the card lists (2, 4, 8, all), and `q` to quit. Both preferences are saved.
+Shortcuts: In `digg status`, press `k` to toggle the cat, `c` to cycle how many CPU cores the card lists (2, 4, 8, all), and `q` to quit. Both preferences are saved.
 
-When enabled, `mo status` shows a read-only alert banner for processes that stay above the configured CPU threshold for a sustained window. Use `--proc-cpu-threshold`, `--proc-cpu-window`, or `--proc-cpu-alerts=false` to tune or disable it.
+When enabled, `digg status` shows a read-only alert banner for processes that stay above the configured CPU threshold for a sustained window. Use `--proc-cpu-threshold`, `--proc-cpu-window`, or `--proc-cpu-alerts=false` to tune or disable it.
 
 #### Machine-Readable Output
 
-Both `mo analyze` and `mo status` support a `--json` flag for scripting and automation.
+Both `digg analyze` and `digg status` support a `--json` flag for scripting and automation.
 
-`mo status` also auto-detects when its output is piped (not a terminal) and switches to JSON automatically.
+`digg status` also auto-detects when its output is piped (not a terminal) and switches to JSON automatically.
 
 ```bash
 # Disk analysis as JSON
-$ mo analyze --json ~/Documents
+$ digg analyze --json ~/Documents
 {
   "path": "/Users/you/Documents",
   "overview": false,
@@ -251,7 +243,7 @@ $ mo analyze --json ~/Documents
 }
 
 # System status as JSON
-$ mo status --json
+$ digg status --json
 {
   "host": "MacBook-Pro",
   "health_score": 92,
@@ -263,7 +255,7 @@ $ mo status --json
 }
 
 # Auto-detected JSON when piped
-$ mo status | jq '.health_score'
+$ digg status | jq '.health_score'
 92
 ```
 
@@ -272,7 +264,7 @@ $ mo status | jq '.health_score'
 Clean old build artifacts such as `node_modules`, `target`, `.build`, `build`, and `dist` to free up disk space.
 
 ```bash
-mo purge
+digg purge
 
 Select Categories to Clean - 18.5GB (8 selected)
 
@@ -294,7 +286,7 @@ Select Categories to Clean - 18.5GB (8 selected)
 <details>
 <summary><strong>Custom Scan Paths</strong></summary>
 
-Run `mo purge --paths` to configure scan directories, or edit `~/.config/diggory/purge_paths` directly:
+Run `digg purge --paths` to configure scan directories, or edit `~/.config/diggory/purge_paths` directly:
 
 ```shell
 ~/Documents/MyProjects
@@ -311,7 +303,7 @@ When custom paths are configured, Diggory scans only those directories. Otherwis
 Find and remove large installer files across Downloads, Desktop, Homebrew caches, iCloud, and Mail. Each file is labeled by source.
 
 ```bash
-mo installer
+digg installer
 
 Select Installers to Remove - 3.8GB (5 selected)
 
@@ -328,7 +320,7 @@ Select Installers to Remove - 3.8GB (5 selected)
 Launch Diggory commands from Raycast or Alfred:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tw93/Diggory/main/scripts/setup-quick-launchers.sh | bash
+curl -fsSL https://raw.githubusercontent.com/superstack-oss/Diggory-CLI/main/scripts/setup-quick-launchers.sh | bash
 ```
 
 Adds 5 commands: `Diggory Clean`, `Diggory Uninstall`, `Diggory Optimize`, `Diggory Analyze`, `Diggory Status`.
@@ -348,33 +340,12 @@ After running the script, complete these steps in Raycast:
 
 ### Terminal Detection
 
-Diggory auto-detects your terminal app. iTerm2 has known compatibility issues. We highly recommend [Kaku](https://github.com/tw93/Kaku). Other good options are Alacritty, kitty, WezTerm, Ghostty, and Warp. To override, set `MO_LAUNCHER_APP=<name>`.
-
-## Community Love
-
-Thanks to everyone who helped build Diggory. Go follow them. ❤️
-
-<a href="https://github.com/tw93/Diggory/graphs/contributors">
-  <img src="./CONTRIBUTORS.svg?v=2" width="1000" />
-</a>
-
-<br/><br/>
-Real feedback from users who shared Diggory on X.
-
-<img src="https://gw.alipayobjects.com/zos/k/dl/lovediggory.jpeg" alt="Community feedback on Diggory" width="1000" />
+Diggory auto-detects your terminal app. iTerm2 has known compatibility issues. Alacritty, kitty, WezTerm, Ghostty, and Warp are good options. To override, set `MO_LAUNCHER_APP=<name>`.
 
 ## Support
 
-- Getting [Diggory for Mac](https://diggory.fit) is the most direct way to support Diggory's development.
-- If Diggory helped you, give it a star, [share it](https://twitter.com/intent/tweet?url=https://github.com/tw93/Diggory&text=Diggory%20-%20Deep%20clean%20and%20optimize%20your%20Mac.), or open an issue or PR.
-- I have two cats, TangYuan and Coke. If you think Diggory delights your life, you can feed them <a href="https://cats.tw93.fun?name=Diggory" target="_blank">canned food 🥩</a>.
-
-<details>
-<summary>These lovely people already did 🐱</summary>
-<br/>
-<a href="https://cats.tw93.fun?name=Diggory"><img src="https://cdn.jsdelivr.net/gh/tw93/sponsors@main/assets/sponsors.svg" width="1000" loading="lazy" /></a>
-</details>
+If Diggory helped you, give the [repo](https://github.com/superstack-oss/Diggory-CLI) a star or open an issue or PR.
 
 ## License
 
-Diggory is open source under GPL-3.0, see [LICENSE](LICENSE). A version you modify and share stays open under the same license, and if you fork Diggory into your own product, to avoid confusion please give it a different name and credit Diggory as the source. [Diggory for Mac](https://diggory.fit) is a separate, proprietary app, and Diggory is here for the long run.
+Diggory is open source under GPL-3.0, see [LICENSE](LICENSE). A version you modify and share stays open under the same license. If you fork Diggory into your own product, please give it a different name and credit this project as the source.

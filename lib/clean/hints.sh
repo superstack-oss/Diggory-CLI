@@ -1,5 +1,5 @@
 #!/bin/bash
-# Hint notices used by `mo clean` (non-destructive guidance only).
+# Hint notices used by `digg clean` (non-destructive guidance only).
 
 set -euo pipefail
 
@@ -7,7 +7,7 @@ diggory_hints_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1090
 source "$diggory_hints_dir/purge_shared.sh"
 
-# Quick reminder probe for project build artifacts handled by `mo purge`.
+# Quick reminder probe for project build artifacts handled by `digg purge`.
 # Designed to be very fast: shallow directory checks only, no deep find scans.
 # shellcheck disable=SC2329
 load_quick_purge_hint_paths() {
@@ -64,7 +64,7 @@ hint_collect_child_dirs_with_timeout() {
     : > "$output_file" || return 1
 
     # 1s: shallow directory listing should be near-instant on healthy local
-    # paths. Slow/cloud-backed roots are skipped so `mo clean` never appears
+    # paths. Slow/cloud-backed roots are skipped so `digg clean` never appears
     # stuck while rendering this non-destructive hint.
     run_with_timeout "$timeout_seconds" find "$parent" -mindepth 1 -maxdepth 1 -type d -print0 > "$output_file" 2> /dev/null
 }
@@ -406,7 +406,7 @@ show_project_artifact_hint_notice() {
     if [[ "$PROJECT_ARTIFACT_HINT_DETECTED" != "true" ]]; then
         if [[ "${PROJECT_ARTIFACT_HINT_SCAN_SKIPPED:-false}" == "true" ]]; then
             note_activity
-            echo -e "  ${YELLOW}${ICON_WARNING}${NC} Build artifacts · scan skipped · ${GRAY}mo purge${NC}"
+            echo -e "  ${YELLOW}${ICON_WARNING}${NC} Build artifacts · scan skipped · ${GRAY}digg purge${NC}"
         fi
         return 0
     fi
@@ -416,12 +416,12 @@ show_project_artifact_hint_notice() {
     local hint_count_label="$PROJECT_ARTIFACT_HINT_COUNT"
     [[ "$PROJECT_ARTIFACT_HINT_TRUNCATED" == "true" ]] && hint_count_label="${hint_count_label}+"
 
-    local review_command="mo purge"
+    local review_command="digg purge"
     if [[ $PROJECT_ARTIFACT_HINT_ESTIMATE_SAMPLES -gt 0 && $PROJECT_ARTIFACT_HINT_ESTIMATED_KB -eq 0 ]]; then
-        review_command="mo purge --include-empty"
+        review_command="digg purge --include-empty"
     fi
 
-    # One compact row: "Build artifacts · 15+ dirs, 985.6MB+ · mo purge".
+    # One compact row: "Build artifacts · 15+ dirs, 985.6MB+ · digg purge".
     local detail="${hint_count_label} dirs"
     if [[ $PROJECT_ARTIFACT_HINT_ESTIMATE_SAMPLES -gt 0 ]]; then
         local estimate_human

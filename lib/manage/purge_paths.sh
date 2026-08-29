@@ -108,7 +108,7 @@ manage_purge_paths() {
 
     echo ""
     echo -e "${GREEN}${ICON_SUCCESS}${NC} Configuration updated"
-    echo -e "${GRAY}Run 'mo purge' to clean with new paths${NC}"
+    echo -e "${GRAY}Run 'digg purge' to clean with new paths${NC}"
     echo ""
 }
 

@@ -212,7 +212,7 @@ main() {
                 ;;
             *)
                 echo "Unknown optimize option: $arg"
-                echo "Use 'mo optimize --help' for supported options."
+                echo "Use 'digg optimize --help' for supported options."
                 exit 1
                 ;;
         esac

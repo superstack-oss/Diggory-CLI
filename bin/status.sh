@@ -11,5 +11,5 @@ if [[ -x "$GO_BIN" ]]; then
     exec "$GO_BIN" "$@"
 fi
 
-echo "Bundled status binary not found. Please reinstall Diggory or run mo update to restore it." >&2
+echo "Bundled status binary not found. Please reinstall Diggory or run digg update to restore it." >&2
 exit 1

@@ -24,7 +24,7 @@ _SPINNER_PID=""
 start_line_spinner() {
     local msg="$1"
     # A progress line only means something while it is being watched. When the
-    # output is captured, as `mo update` does, every one of these lands in the
+    # output is captured, as `digg update` does, every one of these lands in the
     # final block as a stale "Downloading..." / "Verifying..." line that the
     # very next line contradicts. Say nothing there and let the result lines
     # speak; a tty still gets the animation.
@@ -566,7 +566,7 @@ report_install_lock_failure() {
     case "$INSTALL_LOCK_FAILURE" in
         no_admin)
             log_error "Admin access to $INSTALL_DIR is required but not available"
-            log_error "Cache credentials first, then retry: sudo -v && mo update"
+            log_error "Cache credentials first, then retry: sudo -v && digg update"
             ;;
         unsafe_ancestor)
             install_lock_dir="${INSTALL_LOCK_UNSAFE_ANCESTOR:-<dir>}"
@@ -650,7 +650,7 @@ get_remote_main_commit_hash() {
     local response=""
     local commit_hash=""
     response=$(curl -fsSL --connect-timeout 3 --max-time 5 \
-        "https://api.github.com/repos/tw93/diggory/commits/main" 2> /dev/null || true)
+        "https://api.github.com/repos/superstack-oss/Diggory-CLI/commits/main" 2> /dev/null || true)
     commit_hash=$(printf '%s\n' "$response" |
         sed -n 's/.*"sha"[[:space:]]*:[[:space:]]*"\([a-f0-9]\{40\}\)".*/\1/p' | head -1)
     [[ "$commit_hash" =~ ^[0-9a-f]{40}$ ]] || return 1
@@ -662,11 +662,11 @@ source_archive_url() {
     local source_commit="${2:-}"
 
     if [[ "$branch" == "main" && "$source_commit" =~ ^[0-9a-f]{40}$ ]]; then
-        printf 'https://github.com/tw93/diggory/archive/%s.tar.gz\n' "$source_commit"
+        printf 'https://github.com/superstack-oss/Diggory-CLI/archive/%s.tar.gz\n' "$source_commit"
     elif [[ "$branch" == "main" || "$branch" == "dev" ]]; then
-        printf 'https://github.com/tw93/diggory/archive/refs/heads/%s.tar.gz\n' "$branch"
+        printf 'https://github.com/superstack-oss/Diggory-CLI/archive/refs/heads/%s.tar.gz\n' "$branch"
     else
-        printf 'https://github.com/tw93/diggory/archive/refs/tags/%s.tar.gz\n' "$branch"
+        printf 'https://github.com/superstack-oss/Diggory-CLI/archive/refs/tags/%s.tar.gz\n' "$branch"
     fi
 }
 
@@ -762,7 +762,7 @@ resolve_source_dir() {
         local clone_succeeded=false
         if [[ -n "$source_commit" ]]; then
             if git init -q "$tmp/diggory" > /dev/null 2>&1 &&
-                git -C "$tmp/diggory" remote add origin https://github.com/tw93/diggory.git > /dev/null 2>&1 &&
+                git -C "$tmp/diggory" remote add origin https://github.com/superstack-oss/Diggory-CLI.git > /dev/null 2>&1 &&
                 git -C "$tmp/diggory" fetch -q --depth=1 origin "$source_commit" > /dev/null 2>&1 &&
                 git -C "$tmp/diggory" checkout -q --detach FETCH_HEAD > /dev/null 2>&1; then
                 clone_succeeded=true
@@ -772,7 +772,7 @@ resolve_source_dir() {
             if [[ "$branch" != "main" ]]; then
                 git_args+=("--branch" "$branch")
             fi
-            if git clone "${git_args[@]}" https://github.com/tw93/diggory.git "$tmp/diggory" > /dev/null 2>&1; then
+            if git clone "${git_args[@]}" https://github.com/superstack-oss/Diggory-CLI.git "$tmp/diggory" > /dev/null 2>&1; then
                 clone_succeeded=true
             fi
         fi
@@ -816,7 +816,7 @@ get_latest_release_tag() {
         return 1
     fi
     tag=$(curl -fsSL --connect-timeout 2 --max-time 3 \
-        "https://api.github.com/repos/tw93/diggory/releases/latest" 2> /dev/null |
+        "https://api.github.com/repos/superstack-oss/Diggory-CLI/releases/latest" 2> /dev/null |
         sed -n 's/.*"tag_name":[[:space:]]*"\([^"]*\)".*/\1/p' | head -n1)
     if [[ -z "$tag" ]]; then
         return 1
@@ -828,7 +828,7 @@ get_latest_release_tag_from_git() {
     if ! command -v git > /dev/null 2>&1; then
         return 1
     fi
-    git ls-remote --tags --refs https://github.com/tw93/diggory.git 2> /dev/null |
+    git ls-remote --tags --refs https://github.com/superstack-oss/Diggory-CLI.git 2> /dev/null |
         awk -F/ '{print $NF}' |
         grep -E '^V[0-9]' |
         sort -V |
@@ -848,7 +848,7 @@ normalize_release_tag() {
 
 release_checksums_url() {
     local tag="$1"
-    printf 'https://github.com/tw93/diggory/releases/download/%s/SHA256SUMS\n' "$tag"
+    printf 'https://github.com/superstack-oss/Diggory-CLI/releases/download/%s/SHA256SUMS\n' "$tag"
 }
 
 download_release_checksums() {
@@ -885,7 +885,7 @@ verify_release_attestation() {
     # produced by self-hosted runners, which a repo compromise could otherwise
     # introduce as a sidechannel.
     if gh attestation verify "$file" \
-        --owner tw93 \
+        --owner superstack-oss \
         --deny-self-hosted-runners \
         > /dev/null 2>&1; then
         return 0
@@ -1298,7 +1298,7 @@ download_binary() {
     local release_tag
     release_tag="$(normalize_release_tag "$version")"
     local asset_name="${binary_name}-darwin-${arch_suffix}"
-    local url="https://github.com/tw93/diggory/releases/download/${release_tag}/${asset_name}"
+    local url="https://github.com/superstack-oss/Diggory-CLI/releases/download/${release_tag}/${asset_name}"
 
     # Skip preflight network checks to avoid false negatives.
 
@@ -1332,7 +1332,7 @@ download_binary() {
     local fallback_tag
     fallback_tag=$(get_latest_release_tag 2> /dev/null || true)
     if [[ -n "$fallback_tag" && "$fallback_tag" != "$release_tag" ]]; then
-        local fallback_url="https://github.com/tw93/diggory/releases/download/${fallback_tag}/${asset_name}"
+        local fallback_url="https://github.com/superstack-oss/Diggory-CLI/releases/download/${fallback_tag}/${asset_name}"
         start_line_spinner "Retrying ${binary_name} from ${fallback_tag}..."
         if curl_download_with_retry "$fallback_url" "$staged_path" 2> /dev/null; then
             if [[ -t 1 ]]; then stop_line_spinner; fi
@@ -1393,7 +1393,7 @@ install_files() {
                 # "Updated to latest version" incident).
                 if ! ensure_sudo_ready; then
                     log_error "Admin access to $INSTALL_DIR is required but not available"
-                    log_error "Cache credentials first, then retry: sudo -v && mo update"
+                    log_error "Cache credentials first, then retry: sudo -v && digg update"
                     return 1
                 fi
             fi
@@ -1403,7 +1403,7 @@ install_files() {
                 ! maybe_sudo chmod +x "$INSTALL_DIR/diggory.new" ||
                 ! maybe_sudo mv -f "$INSTALL_DIR/diggory.new" "$INSTALL_DIR/diggory"; then
                 log_error "Failed to install diggory to $INSTALL_DIR (admin access missing or denied)"
-                log_error "Cache credentials first, then retry: sudo -v && mo update"
+                log_error "Cache credentials first, then retry: sudo -v && digg update"
                 return 1
             fi
 
@@ -1413,11 +1413,11 @@ install_files() {
         exit 1
     fi
 
-    if [[ -f "$SOURCE_DIR/mo" && "$source_dir_abs" != "$install_dir_abs" ]]; then
-        if ! maybe_sudo cp "$SOURCE_DIR/mo" "$INSTALL_DIR/mo.new" ||
-            ! maybe_sudo chmod +x "$INSTALL_DIR/mo.new" ||
-            ! maybe_sudo mv -f "$INSTALL_DIR/mo.new" "$INSTALL_DIR/mo"; then
-            log_error "Failed to install mo alias to $INSTALL_DIR (admin access missing or denied)"
+    if [[ -f "$SOURCE_DIR/digg" && "$source_dir_abs" != "$install_dir_abs" ]]; then
+        if ! maybe_sudo cp "$SOURCE_DIR/digg" "$INSTALL_DIR/digg.new" ||
+            ! maybe_sudo chmod +x "$INSTALL_DIR/digg.new" ||
+            ! maybe_sudo mv -f "$INSTALL_DIR/digg.new" "$INSTALL_DIR/digg"; then
+            log_error "Failed to install digg alias to $INSTALL_DIR (admin access missing or denied)"
             return 1
         fi
     fi
@@ -1468,7 +1468,7 @@ install_files() {
         fi
     fi
 
-    # One line for the whole file install. Reporting the entry script, the mo
+    # One line for the whole file install. Reporting the entry script, the digg
     # alias, the modules and the libraries separately described the layout
     # rather than the outcome, and every one of them is a hard failure that
     # returns above if it goes wrong.
@@ -1499,7 +1499,7 @@ verify_installation() {
         installed_version="$(get_installed_version 2> /dev/null || true)"
         if [[ -n "$expected_version" && -n "$installed_version" && "$expected_version" != "$installed_version" ]]; then
             log_error "Installed diggory reports $installed_version but $expected_version was expected"
-            log_error "The entry script at $INSTALL_DIR/diggory was not replaced; retry with: sudo -v && mo update"
+            log_error "The entry script at $INSTALL_DIR/diggory was not replaced; retry with: sudo -v && digg update"
             exit 1
         fi
 
@@ -1540,7 +1540,7 @@ print_usage_summary() {
     fi
 
     # A usage cheat sheet is for someone watching a fresh install scroll by.
-    # `mo update` runs this same installer with its output captured, so on a
+    # `digg update` runs this same installer with its output captured, so on a
     # tty-less run the block arrives after the fact and tells an existing user
     # the nine commands they already use, followed by a second success line
     # contradicting nothing. The caller prints its own result there.
@@ -1561,25 +1561,25 @@ print_usage_summary() {
     echo ""
     echo "Usage:"
     if [[ ":$PATH:" == *":$INSTALL_DIR:"* ]]; then
-        echo "  mo                           # Interactive menu"
-        echo "  mo clean                     # Deep cleanup"
-        echo "  mo uninstall                 # Remove apps + leftovers"
-        echo "  mo optimize                  # Check and maintain system"
-        echo "  mo analyze                   # Explore disk usage"
-        echo "  mo status                    # Monitor system health"
-        echo "  mo touchid                   # Configure Touch ID for sudo"
-        echo "  mo update                    # Update to latest version"
-        echo "  mo --help                    # Show all commands"
+        echo "  digg                           # Interactive menu"
+        echo "  digg clean                     # Deep cleanup"
+        echo "  digg uninstall                 # Remove apps + leftovers"
+        echo "  digg optimize                  # Check and maintain system"
+        echo "  digg analyze                   # Explore disk usage"
+        echo "  digg status                    # Monitor system health"
+        echo "  digg touchid                   # Configure Touch ID for sudo"
+        echo "  digg update                    # Update to latest version"
+        echo "  digg --help                    # Show all commands"
     else
-        echo "  $INSTALL_DIR/mo                           # Interactive menu"
-        echo "  $INSTALL_DIR/mo clean                     # Deep cleanup"
-        echo "  $INSTALL_DIR/mo uninstall                 # Remove apps + leftovers"
-        echo "  $INSTALL_DIR/mo optimize                  # Check and maintain system"
-        echo "  $INSTALL_DIR/mo analyze                   # Explore disk usage"
-        echo "  $INSTALL_DIR/mo status                    # Monitor system health"
-        echo "  $INSTALL_DIR/mo touchid                   # Configure Touch ID for sudo"
-        echo "  $INSTALL_DIR/mo update                    # Update to latest version"
-        echo "  $INSTALL_DIR/mo --help                    # Show all commands"
+        echo "  $INSTALL_DIR/digg                           # Interactive menu"
+        echo "  $INSTALL_DIR/digg clean                     # Deep cleanup"
+        echo "  $INSTALL_DIR/digg uninstall                 # Remove apps + leftovers"
+        echo "  $INSTALL_DIR/digg optimize                  # Check and maintain system"
+        echo "  $INSTALL_DIR/digg analyze                   # Explore disk usage"
+        echo "  $INSTALL_DIR/digg status                    # Monitor system health"
+        echo "  $INSTALL_DIR/digg touchid                   # Configure Touch ID for sudo"
+        echo "  $INSTALL_DIR/digg update                    # Update to latest version"
+        echo "  $INSTALL_DIR/digg --help                    # Show all commands"
     fi
     echo ""
 }
@@ -1645,7 +1645,7 @@ perform_install() {
         echo ""
         local branch_name="${DIGGORY_VERSION:-main}"
         log_warning "Edge version installed on ${branch_name} branch"
-        log_info "This is a testing version; use 'mo update' to switch to stable"
+        log_info "This is a testing version; use 'digg update' to switch to stable"
     fi
 
     print_usage_summary "installed" "$installed_version"

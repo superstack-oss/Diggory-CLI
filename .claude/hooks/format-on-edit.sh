@@ -44,7 +44,7 @@ format_repo_file() {
             ;;
         *.go)
             if command -v goimports > /dev/null 2>&1; then
-                goimports -w -local github.com/tw93/diggory "$resolved" > /dev/null 2>&1 || true
+                goimports -w -local github.com/superstack-oss/Diggory-CLI "$resolved" > /dev/null 2>&1 || true
             elif command -v gofmt > /dev/null 2>&1; then
                 gofmt -w "$resolved" > /dev/null 2>&1 || true
             fi

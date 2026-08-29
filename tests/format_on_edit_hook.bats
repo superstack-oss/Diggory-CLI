@@ -39,7 +39,7 @@ run_hook() {
     run_hook "$payload"
 
     [ "$status" -eq 0 ]
-    [ "$(cat "$FORMAT_LOG")" = "goimports:-w -local github.com/tw93/diggory $TEST_REPO/cmd/demo/main.go" ]
+    [ "$(cat "$FORMAT_LOG")" = "goimports:-w -local github.com/superstack-oss/Diggory-CLI $TEST_REPO/cmd/demo/main.go" ]
 }
 
 @test "hook refuses files and symlink targets outside the repository" {

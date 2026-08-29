@@ -769,7 +769,7 @@ initialize_diggory_temp_registry_path() {
     # path. A forked child gets a different $$: the registry is exported, so an
     # inherited value that no longer matches belongs to the parent process, and
     # adopting it would make the child's exit cleanup delete the parent's live
-    # temp files. `mo update` lost its downloaded installer exactly this way,
+    # temp files. `digg update` lost its downloaded installer exactly this way,
     # because install.sh runs the freshly installed `diggory --version`.
     local owned="${DIGGORY_RESOLVED_TMPDIR%/}/diggory.registry.$$"
     [[ "${DIGGORY_TEMP_REGISTRY_FILE:-}" == "$owned" ]] && return 0

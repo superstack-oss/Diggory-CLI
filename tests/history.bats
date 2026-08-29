@@ -46,7 +46,7 @@ EOF
     printf '2026-05-24T11:00:01+0000\tpermanent\t10\tdry-run\t/tmp/build\n' >> "$HOME/Library/Logs/diggory/deletions.log"
 }
 
-@test "mo history summarizes operation sessions and deletion audit" {
+@test "digg history summarizes operation sessions and deletion audit" {
     write_history_logs
 
     run env HOME="$HOME" "$PROJECT_ROOT/diggory" history
@@ -59,7 +59,7 @@ EOF
     [[ "$output" == *"/tmp/Old App.app"* ]]
 }
 
-@test "mo history --json returns stable parseable fields" {
+@test "digg history --json returns stable parseable fields" {
     write_history_logs
 
     run env HOME="$HOME" "$PROJECT_ROOT/diggory" history --json
@@ -81,7 +81,7 @@ assert data["deletions"][1]["path"] == "/tmp/Old App.app"
 '
 }
 
-@test "mo history preserves failed optimize task counts" {
+@test "digg history preserves failed optimize task counts" {
     cat > "$HOME/Library/Logs/diggory/operations.log" <<'EOF'
 # ========== optimize session started at 2026-05-24 12:00:00 ==========
 [2026-05-24 12:00:01] [optimize] TASK_FAILED disk_verify (task outcome)
@@ -119,7 +119,7 @@ EOF
     [[ "$output" == *"[optimize] TASK_FAILED disk_verify (task outcome)"* ]] || return 1
 }
 
-@test "mo history --json escapes unusual path characters" {
+@test "digg history --json escapes unusual path characters" {
     : > "$HOME/Library/Logs/diggory/operations.log"
     weird_path=$'/tmp/unicode-\xe9\x9b\xaa-quote"slash\\tab\tbackspace\bformfeed\fend'
     printf '2026-05-24T10:00:02+0000\ttrash\t4\tok\t%s\n' "$weird_path" > "$HOME/Library/Logs/diggory/deletions.log"
@@ -136,7 +136,7 @@ assert data["deletions"][0]["path"] == "/tmp/unicode-\u96ea-quote\"slash\\tab\tb
 '
 }
 
-@test "mo history --limit caps sessions and deletion entries" {
+@test "digg history --limit caps sessions and deletion entries" {
     write_history_logs
 
     run env HOME="$HOME" "$PROJECT_ROOT/diggory" history --limit 1
@@ -147,7 +147,7 @@ assert data["deletions"][0]["path"] == "/tmp/unicode-\u96ea-quote\"slash\\tab\tb
     [[ "$output" != *"/tmp/Old App.app"* ]]
 }
 
-@test "mo history --limit accepts decimal values with leading zeros" {
+@test "digg history --limit accepts decimal values with leading zeros" {
     write_history_logs
 
     run env HOME="$HOME" "$PROJECT_ROOT/diggory" history --limit 0001
@@ -157,7 +157,7 @@ assert data["deletions"][0]["path"] == "/tmp/unicode-\u96ea-quote\"slash\\tab\tb
     [[ "$output" != *"value too great for base"* ]]
 }
 
-@test "mo history handles empty logs" {
+@test "digg history handles empty logs" {
     : > "$HOME/Library/Logs/diggory/operations.log"
 
     run env HOME="$HOME" "$PROJECT_ROOT/diggory" history
@@ -166,7 +166,7 @@ assert data["deletions"][0]["path"] == "/tmp/unicode-\u96ea-quote\"slash\\tab\tb
     [[ "$output" == *"No deletion audit entries yet"* ]]
 }
 
-@test "mo history tolerates malformed session summaries" {
+@test "digg history tolerates malformed session summaries" {
     cat > "$HOME/Library/Logs/diggory/operations.log" <<'EOF'
 # ========== clean session started at 2026-05-24 10:00:00 ==========
 [2026-05-24 10:00:01] [clean] REMOVED /tmp/cache (2KB)
@@ -180,7 +180,7 @@ EOF
     [[ "$output" != *"malformed summary items"* ]]
 }
 
-@test "mo history does not create logs when none exist" {
+@test "digg history does not create logs when none exist" {
     rm -rf "$HOME/Library"
 
     run env HOME="$HOME" "$PROJECT_ROOT/diggory" history
@@ -190,7 +190,7 @@ EOF
     [ ! -e "$HOME/Library/Logs/diggory/diggory.log" ]
 }
 
-@test "mo history early dispatch respects source guard" {
+@test "digg history early dispatch respects source guard" {
     # shellcheck disable=SC2016
     run env HOME="$HOME" PROJECT_ROOT="$PROJECT_ROOT" /bin/bash --noprofile --norc -c '
 set -euo pipefail
@@ -205,7 +205,7 @@ echo sourced
     [[ "$output" != *"Diggory History"* ]]
 }
 
-@test "mo history early dispatch keeps global debug flag behavior" {
+@test "digg history early dispatch keeps global debug flag behavior" {
     run env HOME="$HOME" "$PROJECT_ROOT/diggory" --debug history --limit 0001
     [ "$status" -eq 0 ]
     [[ "$output" == *"Diggory History"* ]] || return 1
@@ -217,13 +217,13 @@ echo sourced
     [[ "$output" != *"Unknown option"* ]]
 }
 
-@test "mo history rejects unknown options" {
+@test "digg history rejects unknown options" {
     run env HOME="$HOME" "$PROJECT_ROOT/diggory" history --bad-option
     [ "$status" -eq 1 ]
-    [[ "$output" == *"Unknown option for mo history"* ]]
+    [[ "$output" == *"Unknown option for digg history"* ]]
 }
 
-@test "mo history rejects invalid limit values" {
+@test "digg history rejects invalid limit values" {
     run env HOME="$HOME" "$PROJECT_ROOT/diggory" history --limit nope
     [ "$status" -eq 1 ]
     [[ "$output" == *"Invalid value for --limit"* ]] || return 1

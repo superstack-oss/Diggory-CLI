@@ -6,12 +6,12 @@ Diggory is a local system maintenance tool. It includes high-risk operations suc
 
 Please report suspected security issues privately.
 
-- Email: `hitw93@gmail.com`
+- GitHub Security Advisories: https://github.com/superstack-oss/Diggory-CLI/security/advisories/new
 - Subject line: `Diggory security report`
 
 Do not open a public GitHub issue for an unpatched vulnerability.
 
-If GitHub Security Advisories private reporting is enabled for the repository, you may use that channel instead of email.
+If GitHub Security Advisories private reporting is enabled for the repository, use that channel.
 
 Include as much of the following as possible:
 

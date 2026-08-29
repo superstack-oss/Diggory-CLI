@@ -1488,7 +1488,7 @@ EOF
 # ~/Library/Caches/company.thebrowser.dia, which on a real install holds nothing
 # but Sentry crash state. The actual Chromium caches live under
 # ~/Library/Caches/Dia/User Data and ~/Library/Application Support/Dia/User Data,
-# so `mo clean` reclaimed 0 bytes from Dia. Paths below were measured on Dia
+# so `digg clean` reclaimed 0 bytes from Dia. Paths below were measured on Dia
 # 1.41.1 (bundle company.thebrowser.dia), not inferred from Chromium convention.
 @test "clean_browsers covers the real Dia cache locations" {
     mkdir -p "$HOME/Library/Caches/company.thebrowser.dia/io.sentry"

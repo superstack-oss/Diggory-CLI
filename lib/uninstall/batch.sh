@@ -1391,7 +1391,7 @@ _batch_scan_app_details() {
         elif [[ $live_sibling_rc -eq $DIGGORY_UNINSTALL_SCAN_PARTIAL ]]; then
             # The scan ran but could not read every path, so it cannot rule a
             # sibling out. Treat that exactly like finding one: narrow the plan
-            # and keep going. Aborting here is what left `mo uninstall` exiting
+            # and keep going. Aborting here is what left `digg uninstall` exiting
             # 1 with a debug-only line for apps whose scan touched anything TCC
             # protects (#1339, #1340).
             live_sibling_present=true

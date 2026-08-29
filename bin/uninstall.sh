@@ -1266,13 +1266,13 @@ match_apps_by_name() {
     selected_apps=()
     local -a matched_indices=()
 
-    # `mo uninstall Tor Browser` arrives as two words. Matching each word
+    # `digg uninstall Tor Browser` arrives as two words. Matching each word
     # alone sent "Tor" into a substring hit on WebSTORm while the app the
     # user actually named sat in the list (#1365). When the words joined
     # with spaces exactly match an installed app's display or directory
     # name, that is the query, UNLESS every word already exactly names its
     # own installed app: with Foo.app, Bar.app, and "Foo Bar.app" all
-    # present, `mo uninstall Foo Bar` keeps its original two-app meaning
+    # present, `digg uninstall Foo Bar` keeps its original two-app meaning
     # rather than silently collapsing into the third.
     if [[ ${#search_terms[@]} -gt 1 ]]; then
         local every_word_exact=true
@@ -1400,7 +1400,7 @@ uninstall_list_json_escape() {
 }
 
 # Read-only listing: surface each installed app's display name, bundle id,
-# the exact name `mo uninstall` accepts, and human-readable size. Reuses the
+# the exact name `digg uninstall` accepts, and human-readable size. Reuses the
 # existing scanner so the output stays in lockstep with what the destructive
 # path sees.
 uninstall_list_apps() {
@@ -1420,7 +1420,7 @@ uninstall_list_apps() {
     fi
     rm -f "$apps_file"
 
-    # Auto-switch to JSON when stdout is piped, matching `mo status`.
+    # Auto-switch to JSON when stdout is piped, matching `digg status`.
     local format="text"
     if [[ ! -t 1 ]]; then
         format="json"
@@ -1511,7 +1511,7 @@ uninstall_list_apps() {
             "$size_display"
     done
 
-    printf '\n%d application(s)  |  Remove with: mo uninstall <UNINSTALL NAME>\n\n' "$total"
+    printf '\n%d application(s)  |  Remove with: digg uninstall <UNINSTALL NAME>\n\n' "$total"
     return 0
 }
 
@@ -1547,13 +1547,13 @@ main() {
                 ;;
             "--whitelist")
                 echo "Unknown uninstall option: $arg"
-                echo "Whitelist management is currently supported by: mo clean --whitelist / mo optimize --whitelist"
-                echo "Use 'mo uninstall --help' for supported options."
+                echo "Whitelist management is currently supported by: digg clean --whitelist / digg optimize --whitelist"
+                echo "Use 'digg uninstall --help' for supported options."
                 exit 1
                 ;;
             -*)
                 echo "Unknown uninstall option: $arg"
-                echo "Use 'mo uninstall --help' for supported options."
+                echo "Use 'digg uninstall --help' for supported options."
                 exit 1
                 ;;
             *)

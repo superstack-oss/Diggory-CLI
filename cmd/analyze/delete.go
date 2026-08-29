@@ -320,7 +320,7 @@ func isProtectedAnalyzeDeletePath(path string) bool {
 
 	// EDR / Darwin-cache protection is based on the absolute path and does not
 	// depend on HOME, so check it first: an unset HOME must not let a Falcon
-	// cache slip through (e.g. `env -u HOME mo analyze`).
+	// cache slip through (e.g. `env -u HOME digg analyze`).
 	if isEndpointSecurityCachePath(cleanPath) {
 		return true
 	}

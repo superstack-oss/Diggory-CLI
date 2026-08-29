@@ -18,7 +18,7 @@ operations on the local machine:
 
 1. **Cleanup**: remove caches, logs, and temp data the OS or apps regenerate.
 2. **Uninstall**: remove an app bundle and its data directories.
-3. **Trash routing**: move user-selected files in `mo analyze` to Trash.
+3. **Trash routing**: move user-selected files in `digg analyze` to Trash.
 
 We assume:
 - The invoking user has shell access and runs diggory intentionally.
@@ -192,10 +192,10 @@ changes, and CI matrix updates.
 
 ## Layer 4: Trash routing default
 
-`mo analyze` and `mo clean`'s ad-hoc paths route deletions to the macOS
+`digg analyze` and `digg clean`'s ad-hoc paths route deletions to the macOS
 Trash via Finder AppleScript (`cmd/analyze/delete.go:124`). This gives
 users the standard Apple-native "Put Back" recovery flow. Permanent
-deletion requires explicit `--permanent` or going through `mo clean`'s
+deletion requires explicit `--permanent` or going through `digg clean`'s
 batched cleanup path.
 
 The `osascript` call uses a 30-second timeout (`trashTimeout`) so a

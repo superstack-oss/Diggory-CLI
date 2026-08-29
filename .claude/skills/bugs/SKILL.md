@@ -81,7 +81,7 @@ The method: enumerate every caller of each protection helper, then every deletio
 
 Every production `du -s` site should route through the timeout wrapper. `tests/core_timeout.bats` pins that with a source-invariant test; copy the shape for any new unbounded command.
 
-Installed-binary verification is the same class: every post-update `mo --version` or `"$diggory_path" --version` probe must use `run_with_timeout` with `DIGGORY_TIMEOUT_QUICK_DETECT_SEC`, and standalone `install.sh` must use its bounded local wrapper for both `--version` and `--help`. A broken executable is exactly when a verification probe is most likely to hang. The update entrypoint also stays single-flight per install directory; otherwise one process can verify another process's metadata or binary generation. Standalone install and self-heal verification share the same target-adjacent `/usr/bin/lockf`; keep the kernel lock held by a parent-liveness-bound process instead of replacing it with a check-then-remove shell sequence.
+Installed-binary verification is the same class: every post-update `digg --version` or `"$diggory_path" --version` probe must use `run_with_timeout` with `DIGGORY_TIMEOUT_QUICK_DETECT_SEC`, and standalone `install.sh` must use its bounded local wrapper for both `--version` and `--help`. A broken executable is exactly when a verification probe is most likely to hang. The update entrypoint also stays single-flight per install directory; otherwise one process can verify another process's metadata or binary generation. Standalone install and self-heal verification share the same target-adjacent `/usr/bin/lockf`; keep the kernel lock held by a parent-liveness-bound process instead of replacing it with a check-then-remove shell sequence.
 
 Two subtler variants:
 
@@ -115,7 +115,7 @@ command grep -rn '\$\{[a-z_]*\[@\]\}' lib/ bin/ | wc -l   # spot-check new sites
 
 Background workers that never need the terminal keep stealing it.
 
-- The perl timeout fallback hands the controlling terminal to its child whenever stdin is a tty. A background metadata-refresh worker still holding the tty stole the foreground process group, so `mo uninstall` stopped with SIGTTIN at the confirmation prompt (`c93afca3`).
+- The perl timeout fallback hands the controlling terminal to its child whenever stdin is a tty. A background metadata-refresh worker still holding the tty stole the foreground process group, so `digg uninstall` stopped with SIGTTIN at the confirmation prompt (`c93afca3`).
 - BSD `mv`/`cp` prompt on stderr and read stdin when the destination exists and is not writable, so the UI froze on a `getchar()` with the spinner pinned to "Updating cache..." (`63030e3a`).
 
 The method: every background subshell, `&`, or disowned worker that calls `run_with_timeout` needs `< /dev/null`. Every command that can prompt needs stdin closed plus `-f`. Every trap installed by a menu or scan must save and restore the caller's traps (`lib/ui/menu_paginated.sh` is the reference implementation).
@@ -191,7 +191,7 @@ A guard with many independent failure causes and one message. The user cannot ac
 `acquire_install_lock` refused for an untrusted ancestor, a denied `sudo -n`, an unusable lock directory, a lock path replaced by a symlink or fifo, a missing `/usr/bin/lockf`, and genuine contention. All printed one line about the lock being unavailable. Counting the causes is the probe, but do not quote the count here: it moves with every refactor, and a number this file cannot measure reads as rot the next time someone checks it. Three things followed, and each is worth checking for separately:
 
 - **The reporter did the triage.** #1335 reverse-engineered `install_lock_has_unsafe_ancestor` by hand from the source to learn why a plain install failed.
-- **A new gate silently downgraded an older diagnosis.** `d4a4b80c` already printed the actionable `Cache credentials first, then retry: sudo -v && mo update` for a missing admin session. `e2020772` put the lock in front of it, hit the same condition first, and reported it as a busy lock. Nothing failed; the diagnosis just got worse. When adding a gate ahead of an existing failure path, read what the old path said and keep the new one at least as actionable.
+- **A new gate silently downgraded an older diagnosis.** `d4a4b80c` already printed the actionable `Cache credentials first, then retry: sudo -v && digg update` for a missing admin session. `e2020772` put the lock in front of it, hit the same condition first, and reported it as a busy lock. Nothing failed; the diagnosis just got worse. When adding a gate ahead of an existing failure path, read what the old path said and keep the new one at least as actionable.
 - **The test suite pinned the regression.** `926c2efa` replaced one catch-all string with another and added `grep -qF 'Could not acquire the Diggory installation lock for'` as a source invariant, making the vague message a requirement. Pin reason codes, never a catch-all string.
 
 Swallowed stderr is what hides this class during debugging: the privileged steps ran under `2> /dev/null`, so no run of the real command ever showed the underlying `sudo` error. Static reading went in circles until a differential probe (same code with and without a controlling terminal) isolated it in one run.

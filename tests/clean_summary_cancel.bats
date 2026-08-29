@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 # Regression for #1342: when a cleanup scan/size check hits its internal
-# timeout (exit 124), `mo clean` must still print the final summary with an
+# timeout (exit 124), `digg clean` must still print the final summary with an
 # explicit reason instead of exiting silently mid-run.
 
 setup_file() {

@@ -1,4 +1,4 @@
-module github.com/tw93/diggory
+module github.com/superstack-oss/Diggory-CLI
 
 go 1.25.0
 

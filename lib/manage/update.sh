@@ -889,11 +889,13 @@ check_for_updates() {
 # UI helpers
 show_brand_banner() {
     cat << EOF
-${GREEN} __  __       _      ${NC}
-${GREEN}|  \/  | ___ | | ___ ${NC}
-${GREEN}| |\/| |/ _ \| |/ _ \\${NC}
-${GREEN}| |  | | (_) | |  __/${NC}  ${BLUE}https://diggory.fit${NC}
-${GREEN}|_|  |_|\___/|_|\___|${NC}  ${GREEN}${DIGGORY_TAGLINE}${NC}
+${GREEN} ____ ___ ____ ____  ___  ______   __${NC}
+${GREEN}|  _ \\_ _/ ___/ ___|/ _ \\|  _ \\ \\ / /${NC}
+${GREEN}| | | | | |  _| |  _| | | | |_) \\ V /${NC}
+${GREEN}| |_| | | |_| | |_| | |_| |  _ < | |${NC}   ${BLUE}https://diggory.superstack.in${NC}
+${GREEN}|____/___\\____\\____|\\___/|_| \\_\\|_|${NC}   ${GREEN}v${VERSION}${NC}  ${GREEN}${DIGGORY_TAGLINE}${NC}
+${GRAY}Superstack${NC}  ${BLUE}https://www.superstack.in${NC}
+${GRAY}https://github.com/superstack-oss/Diggory-CLI${NC}
 
 EOF
 }

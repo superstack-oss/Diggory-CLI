@@ -116,6 +116,19 @@ setup() {
 	[[ "$output" != *"digg optimise"* ]]
 }
 
+@test "diggory --help shows Diggory brand, version, and Superstack links" {
+	expected_version="$(grep '^VERSION=' "$PROJECT_ROOT/diggory" | head -1 | sed 's/VERSION=\"\(.*\)\"/\1/')"
+	run env HOME="$HOME" "$PROJECT_ROOT/diggory" --help
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"v${expected_version}"* ]] || return 1
+	[[ "$output" == *"https://diggory.superstack.in"* ]] || return 1
+	[[ "$output" == *"Superstack"* ]] || return 1
+	[[ "$output" == *"https://www.superstack.in"* ]] || return 1
+	[[ "$output" == *"https://github.com/superstack-oss/Diggory-CLI"* ]] || return 1
+	[[ "$output" != *"diggory.fit"* ]] || return 1
+	[[ "$output" != *"|  \\/  | ___ | | ___"* ]] || return 1
+}
+
 @test "diggory --version reports script version" {
 	expected_version="$(grep '^VERSION=' "$PROJECT_ROOT/diggory" | head -1 | sed 's/VERSION=\"\(.*\)\"/\1/')"
 	run env HOME="$HOME" "$PROJECT_ROOT/diggory" --version
